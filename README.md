@@ -2,7 +2,7 @@
 This toolkit is a set of line command tools to use with mycroft - https://mycroft.ai/
 
 List skills, intents and vocabularies:
-
+```
 # mlsskills -h
 Name: mlsskills - List Mycroft skillss
 Usage: mlsskills [OPTIONS] [PATTERN]
@@ -34,3 +34,4 @@ OPTIONS:
   -h|--help         Give help (this screen)
   -l|--long         Long listing of vocab
   -x|--debug        Print commands and arguments as they are executed
+```
