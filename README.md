@@ -1,5 +1,5 @@
 # mycroft-tools
-line command tools to use with mycroft
+This toolkit is a set of line command tools to use with mycroft - https://mycroft.ai/
 
 List skills, intents and vocabularies:
 
