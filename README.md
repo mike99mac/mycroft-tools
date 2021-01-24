@@ -3,9 +3,9 @@ This toolkit is a set of line command tools to use with mycroft - https://mycrof
 
 List skills, intents and vocabularies:
 ```
-# mlsskills -h
-Name: mlsskills - List Mycroft skillss
-Usage: mlsskills [OPTIONS] [PATTERN]
+# lsskills -h
+Name: lsskills - List Mycroft skillss
+Usage: lsskills [OPTIONS] [PATTERN]
 Where: PATTERN is an optional string pattern to search for
 
 OPTIONS:
@@ -15,9 +15,9 @@ OPTIONS:
   -u|--uninstalled  Only list skills not installed
   -x|--debug        Print commands and arguments as they are executed
 
-# mlsintent -h
-Name: mlsintent - List Mycroft intents
-Usage: mlsintent [OPTIONS] [PATTERN]
+# lsintent -h
+Name: lsintent - List Mycroft intents
+Usage: lsintent [OPTIONS] [PATTERN]
 Where: PATTERN is an optional string pattern to search for
 
 OPTIONS:
@@ -25,9 +25,9 @@ OPTIONS:
   -l|--long         Long listing of intent
   -x|--debug        Print commands and arguments as they are executed
 
-# mlsvocab -h
-Name: mlsvocab - List Mycroft vocabs
-Usage: mlsvocab [OPTIONS] [PATTERN]
+# lsvocab -h
+Name: lsvocab - List Mycroft vocabs
+Usage: lsvocab [OPTIONS] [PATTERN]
 Where: PATTERN is an optional string pattern to search for
 
 OPTIONS:
