@@ -1,7 +1,11 @@
 # mycroft-tools
-This toolkit is a set of line command tools to use with mycroft - https://mycroft.ai/
+This toolkit is a set of line command tools to use with Mycroft.
 
-List skills, intents and vocabularies:
+Three scripts list Mycroft skills, intents and vocabularies. The help output is below.
+Also I added some more helpful scripts:
+  * pitemp     - Report the temperature of the Raspberry Pi
+  * testplay   - Play back a recorded file to test your speakers
+  * testrecord - Record for a short while and save to a file to test your microphone
 ```
 # lsskills -h
 Name: lsskills - List Mycroft skillss
