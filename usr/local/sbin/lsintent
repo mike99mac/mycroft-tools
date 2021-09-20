@@ -4,7 +4,6 @@
 # lsskills - list skills installed or uninstalled (symlink to lsintent)   
 # lsvocab  - list and sort vocab lines in files (symlink to lsintent)   
 #
-
 #+--------------------------------------------------------------------------+
 function usage()
 # Give help to the user
