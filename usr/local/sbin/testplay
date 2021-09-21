@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# test playing a file that was recorded to
+#
+aplay /tmp/test-mic.wav

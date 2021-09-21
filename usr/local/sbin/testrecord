@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# test recording with the small flat microphone
+#
+echo "Testing your microphone for 5 seconds - SAY SOMETHING!"
+arecord -f S16_LE -d 5 -r 16000 --device=hw:1,0 /tmp/test-mic.wav
