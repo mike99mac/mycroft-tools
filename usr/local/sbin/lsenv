@@ -1,7 +1,6 @@
 #!/bin/bash
 #
-# lspairingcode - list the six character code to pair your device
-# This was adapted from code @goldyfruit posted to the Mycroft forum in Oct 2021
+# lsenv - list many aspects of the Mycroft environment
 #
 #+--------------------------------------------------------------------------+
 function usage()
@@ -52,28 +51,42 @@ function parseArgs()
  }                                         # parseArgs()
 
 #+--------------------------------------------------------------------------+
-function doList()
-# List intents or vocabs and apply optional search filter 
-# Args: 
+function listService()
+# List the status of one service 
+# Arg 1: service to list
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  skills_log=/var/log/mycroft/skills.log
-  string="Pairing code"
+  local theService=$1
 
-  if grep -q "$string" $skills_log; then   # found string
-    data=$(grep "${string}" $skills_log | tail -n 1)
-    code=$(echo $data | awk '{ print $NF }' )
-    code_time=$(echo $data | awk '{ print $1" "$2 }')
-    
-    echo "Pairing code: ${code}"
-    echo "Generated   : ${code_time%.*}"   # chop off milliseconds
+  local tempFile=/tmp/fubar
+  /usr/sbin/service $theService status > $tempFile 
+  grep -q "active (running)" $tempFile 
+  if [ $? = 0 ]; then                      # found "active (running)"
+    echo "  Service $theService is running"
   else
-    echo "No pairing code found in $skills_log"
-    exit 1
-  fi
+    echo "  WARNING: Service $theService is not running:"
+    cat $tempFile
+  fi	  
+  /usr/bin/rm $tempFile                    # remove output file 
+  # echo                                     # leave some room
+ }                                         # listService()
+
+#+--------------------------------------------------------------------------+
+function doList()
+# List many aspects of the Mycroft environment 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo "Status of the Mycroft stack:"
+  listService mycroft
+  listService jellyfin
+  listService pulseaudio
+  /usr/local/sbin/lstemp                   # show the temp of the RasPi
  }                                         # doList()
 
 #+--------------------------------------------------------------------------+

@@ -1,0 +1,86 @@
+#!/bin/bash
+#
+# lspairing - list the six character code to pair your device
+# This was adapted from code @goldyfruit posted to the Mycroft forum in Oct 2021
+#
+#+--------------------------------------------------------------------------+
+function usage()
+# Give help to the user
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo "Name: lspairing - List the Mycroft pairing code for your device"
+  echo "Usage: lspairing [OPTIONS] [PATTERN]"
+  echo ""
+  echo "OPTIONS:"
+  echo "  -h|--help         Give help (this screen)"
+  echo "  -v|--verbose      Increase verbosity" 
+  echo "  -x|--debug        Print commands and arguments as they are executed"
+  exit 51
+ }                                         # usage()
+
+#+--------------------------------------------------------------------------+
+function parseArgs()
+# Parse arguments
+# Args: All arguments passed into script
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  while [ -n "$1" ]                        # loop through args passed in
+  do
+    case "$1" in
+      -h|--help)
+        usage
+        ;;
+      -v|--verbose) 
+        verbose=2
+        ;;
+      -x|--debug)                          # turn trace on
+         set -vx
+         ;;
+      *)
+	echo "ERROR: Too many arguments: $1"
+	usage 
+        ;;
+    esac
+    shift
+  done
+ }                                         # parseArgs()
+
+#+--------------------------------------------------------------------------+
+function doList()
+# List intents or vocabs and apply optional search filter 
+# Args: 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  skills_log=/var/log/mycroft/skills.log
+  string="Pairing code"
+
+  if grep -q "$string" $skills_log; then   # found string
+    data=$(grep "${string}" $skills_log | tail -n 1)
+    code=$(echo $data | awk '{ print $NF }' )
+    code_time=$(echo $data | awk '{ print $1" "$2 }')
+    
+    echo "Pairing code: ${code}"
+    echo "Generated   : ${code_time%.*}"   # chop off milliseconds
+  else
+    echo "No pairing code found in $skills_log"
+    exit 1
+  fi
+ }                                         # doList()
+
+#+--------------------------------------------------------------------------+
+# Global variables"
+verbose=1                                  # verbosity
+
+# main()
+parseArgs $@                                # parse arguments
+doList                                      # list the requested output 
+
