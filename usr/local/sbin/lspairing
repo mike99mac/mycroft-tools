@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# lspairing - list the six character code to pair your device
+# lspairing - list six character code to pair your device to maycroft.ai
 # This was adapted from code @goldyfruit posted to the Mycroft forum in Oct 2021
 #
 #+--------------------------------------------------------------------------+
