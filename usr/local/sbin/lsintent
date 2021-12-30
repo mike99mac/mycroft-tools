@@ -126,9 +126,9 @@ function listSkills()
   if [ "$skillsType" = all ]; then         # show all skills
     output=`mycroft-msm list`
   elif [ "$skillsType" = installed ]; then # show just skills installed
-    output=`mycroft-msm list | grep '[installed]'`
+    output=`mycroft-msm list 2>&1 | grep installed`
   else                                     # assume 'unistalled'
-    output=`mycroft-msm list | grep -v '[installed]'`
+    output=`mycroft-msm list | grep -v installed`
   fi
  }                                         # listSkills()
 
