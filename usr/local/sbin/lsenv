@@ -65,9 +65,9 @@ function listService()
   /usr/sbin/service $theService status > $tempFile 
   grep -q "active (running)" $tempFile 
   if [ $? = 0 ]; then                      # found "active (running)"
-    echo "  Service $theService is running"
+    echo "  -) $theService is running as a service"
   else
-    echo "  WARNING: Service $theService is not running:"
+    echo "  -) WARNING: Service $theService is not running:"
     cat $tempFile
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
@@ -85,7 +85,15 @@ function doList()
   echo "Status of the Mycroft stack:"
   listService mycroft
   listService jellyfin
-  listService pulseaudio
+  local psout
+  psout=`ps -ef | grep pulseaudio  | grep -v grep`
+  local numLines=`echo "$psout" | wc -l`
+  if [ "$numLines" = 1 ]; then             # expected
+    echo "  -) pulseaudio is running as a process"
+  else                                     # not expected
+    echo "  -) WARNING: Unexpected output from ps -ef | grep pulseaudio  | grep -v grep :"
+    echo $psout
+  fi   
   /usr/local/sbin/lstemp                   # show the temp of the RasPi
  }                                         # doList()
 
