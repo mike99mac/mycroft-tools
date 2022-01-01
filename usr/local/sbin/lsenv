@@ -94,6 +94,8 @@ function doList()
     echo "  -) WARNING: Unexpected output from ps -ef | grep pulseaudio  | grep -v grep :"
     echo $psout
   fi   
+  local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
+  echo "IP address: $IPaddr"
   /usr/local/sbin/lstemp                   # show the temp of the RasPi
  }                                         # doList()
 

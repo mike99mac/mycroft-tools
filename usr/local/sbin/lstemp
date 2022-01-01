@@ -11,4 +11,4 @@ fi
 theTemp=`cat /sys/class/thermal/thermal_zone0/temp` # in thousdandths of degrees celcius
 let theTemp=$theTemp/1000                  # convert to degrees Celcius
 let tempF=$theTemp*9/5+32                  # convert to degrees Farenheit
-echo "Current temperature of the Raspberry Pi: ${theTemp}C / ${tempF}F"
+echo "Raspberry Pi temperature: ${theTemp}C / ${tempF}F"
