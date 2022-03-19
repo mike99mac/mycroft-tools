@@ -1,6 +1,32 @@
 #!/bin/bash
 #
-# test recording with the small flat microphone
+# test recording with default microphone
 #
+# get microphone's sample rate, # of channels and format
+rate=`grep rate: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'` # there could be multiple mic's
+if [ ${#rate} = 0 ]; then                  # no mic found
+  echo "ERROR: no microphone found with command grep rate: /proc/asound/card*/pcm0c/sub0/hw_params"
+  exit 4                                   # cannot perform operation
+fi
+channels=`grep channels: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'`
+if [ ${#channels} = 0 ]; then              # number of channels not found
+  echo "WARNING: did not find number of channels - assuming 1"
+  channels=1                               # assume 1 channel
+fi
+format=`grep ^format: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'`
+if [ ${#format} = 0 ]; then                # format not found
+  echo "WARNING: did not find number of channels - ignoring" # leave empty
+else
+  format="-f $format"                      # add -f flag
+fi
+
+# put the arecord command together and run it
+cmd="arecord $format -c $channels -d 5 -r $rate /tmp/test-mic.wav"
 echo "Testing your microphone for 5 seconds - SAY SOMETHING!"
-arecord -f S16_LE -d 5 -r 16000 --device=hw:1,0 /tmp/test-mic.wav
+echo "INFO: running command: $cmd"
+$cmd                                       # run the command
+rc=$?
+if [ "$rc" != 0 ]; then                    # something didn't work
+  echo "ERROR: command $cmd failed with $rc"
+  exit $rc                                 # not successful
+fi
