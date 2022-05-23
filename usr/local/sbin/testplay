@@ -1,5 +1,77 @@
 #!/bin/bash
 #
-# test playing a file that was recorded to
+# testplay - test recording with default microphone
 #
-aplay /tmp/test-mic.wav
+#+--------------------------------------------------------------------------+
+function usage()
+# Give help to the user
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo "testplay - test playing back recording from test file $testFile"
+  echo "Usage: testplay [OPTIONS]" 
+  echo ""
+  echo "OPTIONS:"
+  echo "  -h|--help         Give help (this screen)"
+  echo "  -v|--verbose      Increase verbosity" 
+  echo "  -x|--debug        Print commands and arguments as they are executed"
+  exit 51
+ }                                         # usage()
+
+#+--------------------------------------------------------------------------+
+function parseArgs()
+# Parse arguments
+# Args: All arguments passed into script
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  while [ -n "$1" ]                        # loop through args passed in
+  do
+    case "$1" in
+      -h|--help)
+        usage
+        ;;
+      -v|--verbose) 
+        verbose=2
+        ;;
+      -x|--debug)                          # turn trace on
+         set -vx
+         ;;
+      *)
+	echo "ERROR: Too many arguments: $1"
+	usage 
+        ;;
+    esac
+    shift
+  done
+ }                                         # parseArgs()
+
+#+--------------------------------------------------------------------------+
+function doTest()
+# test recording with default microphone
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  if [ ! -f $testFile ]; then 
+    echo "ERROR: did note find test recording in file $testFile"
+    echo "Did you run testrecord?"
+  else   
+    aplay $testFile 
+  fi	  
+ }                                         # doTest()
+
+#+--------------------------------------------------------------------------+
+# Global variables"
+testFile="/tmp/test-mic.wav"               # test recording file from testrecord
+verbose=1                                  # verbosity
+
+# main()
+parseArgs $@                               # parse arguments
+doTest                                     # perform the test 
+

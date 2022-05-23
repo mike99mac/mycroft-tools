@@ -1,14 +1,77 @@
 #!/bin/bash
 #
-# lstemp - show the temperature of the Raspberry Pi based on 
-#          the file /sys/class/thermal/thermal_zone0/temp
+# lstemp - show a summary of all tools/scripts in mycroft-tools 
 #
-tempFile="/sys/class/thermal/thermal_zone0/temp"
-if [ ! -f $tempFile ]; then                # file not found
-  echo "ERROR: did not find $tempFile"
-  exit 1
-fi  
-theTemp=`cat /sys/class/thermal/thermal_zone0/temp` # in thousdandths of degrees celcius
-let theTemp=$theTemp/1000                  # convert to degrees Celcius
-let tempF=$theTemp*9/5+32                  # convert to degrees Farenheit
-echo "Raspberry Pi temperature: ${theTemp}C / ${tempF}F"
+#+--------------------------------------------------------------------------+
+function usage()
+# Give help to the user
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo                                     # leave some room
+  echo "Name: lstemp - Show a summary of all tools/scripts in mycroft-tools" 
+  echo "Usage: lstemp [OPTIONS]"
+  echo ""
+  echo "OPTIONS:"
+  echo "  -h|--help         Give help (this screen)"
+  echo "  -x|--debug        Print commands and arguments as they are executed"
+  exit 51
+ }                                         # usage()
+
+#+--------------------------------------------------------------------------+
+function parseArgs()
+# Parse arguments
+# Args: All arguments passed into script
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  while [ -n "$1" ]                        # loop through args passed in
+  do
+    case "$1" in
+      -h|--help)
+        usage
+        ;;
+      -x|--debug)                          # turn trace on
+         set -vx
+         ;;
+      *)
+	echo "ERROR: Too many arguments: $1"
+	exit 4 
+        ;;
+    esac
+    shift
+  done
+ }                                         # parseArgs()
+
+#+--------------------------------------------------------------------------+
+function listTemp()
+# lstemp - show the temperature of the Raspberry Pi based on
+#          the file /sys/class/thermal/thermal_zone0/temp
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  local tempFile="/sys/class/thermal/thermal_zone0/temp"
+  if [ ! -f $tempFile ]; then              # file not found
+    echo "ERROR: did not find $tempFile"
+    exit 1
+  fi
+  local theTemp=`cat /sys/class/thermal/thermal_zone0/temp` # in thousdandths of degrees celcius
+  let theTemp=$theTemp/1000                # convert to degrees Celcius
+  let tempF=$theTemp*9/5+32                # convert to degrees Farenheit
+  echo "Raspberry Pi temperature: ${theTemp}C / ${tempF}F"
+ }                                         # listTemp()
+  
+#+--------------------------------------------------------------------------+
+# Global variables"
+outputType="short"                          # short or long listing 
+
+# main()
+parseArgs $@                                # parse arguments
+listTemp                                    # list temperature
+

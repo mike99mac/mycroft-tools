@@ -10,8 +10,8 @@ function usage()
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  echo "Name: lspairingcode - List the Mycroft pairing code for your device"
-  echo "Usage: lspairingcode [OPTIONS] [PATTERN]"
+  echo "Name: lsenv - List the Mycroft environment" 
+  echo "Usage: lsenv [OPTIONS]" 
   echo ""
   echo "OPTIONS:"
   echo "  -h|--help         Give help (this screen)"
@@ -68,10 +68,15 @@ function listService()
     echo "  -) $theService is running as a service"
   else
     echo "  -) WARNING: Service $theService is not running:"
-    cat $tempFile
+ #   cat $tempFile
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
-  # echo                                     # leave some room
+  local procs=`ps -ef | grep $theService | grep -v grep`
+  if [ ${#procs} != 0 ]; then              # matching process
+    echo "Found matching processes:"
+    echo "$procs"
+  fi  
+  echo "------------------------------------------------------"
  }                                         # listService()
 
 #+--------------------------------------------------------------------------+
@@ -84,6 +89,7 @@ function doList()
 
   echo "Status of the Mycroft stack:"
   listService mycroft
+  listService emby 
   listService jellyfin
   local psout
   psout=`ps -ef | grep pulseaudio  | grep -v grep`
@@ -94,6 +100,8 @@ function doList()
     echo "  -) WARNING: Unexpected output from ps -ef | grep pulseaudio  | grep -v grep :"
     echo $psout
   fi   
+  echo "------------------------------------------------------"
+
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
   echo "IP address: $IPaddr"
   /usr/local/sbin/lstemp                   # show the temp of the RasPi

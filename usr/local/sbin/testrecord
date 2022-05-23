@@ -1,32 +1,107 @@
 #!/bin/bash
 #
-# test recording with default microphone
+# testrecord - test recording with default microphone
 #
-# get microphone's sample rate, # of channels and format
-rate=`grep rate: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'` # there could be multiple mic's
-if [ ${#rate} = 0 ]; then                  # no mic found
-  echo "ERROR: no microphone found with command grep rate: /proc/asound/card*/pcm0c/sub0/hw_params"
-  exit 4                                   # cannot perform operation
-fi
-channels=`grep channels: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'`
-if [ ${#channels} = 0 ]; then              # number of channels not found
-  echo "WARNING: did not find number of channels - assuming 1"
-  channels=1                               # assume 1 channel
-fi
-format=`grep ^format: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'`
-if [ ${#format} = 0 ]; then                # format not found
-  echo "WARNING: did not find number of channels - ignoring" # leave empty
-else
-  format="-f $format"                      # add -f flag
-fi
+#+--------------------------------------------------------------------------+
+function usage()
+# Give help to the user
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
 
-# put the arecord command together and run it
-cmd="arecord $format -c $channels -d 5 -r $rate /tmp/test-mic.wav"
-echo "Testing your microphone for 5 seconds - SAY SOMETHING!"
-echo "INFO: running command: $cmd"
-$cmd                                       # run the command
-rc=$?
-if [ "$rc" != 0 ]; then                    # something didn't work
-  echo "ERROR: command $cmd failed with $rc"
-  exit $rc                                 # not successful
-fi
+  echo "testrecord - test recording with default microphone"
+  echo "Usage: testrecord [OPTIONS]" 
+  echo ""
+  echo "OPTIONS:"
+  echo "  -h|--help         Give help (this screen)"
+  echo "  -v|--verbose      Increase verbosity" 
+  echo "  -x|--debug        Print commands and arguments as they are executed"
+  exit 51
+ }                                         # usage()
+
+#+--------------------------------------------------------------------------+
+function parseArgs()
+# Parse arguments
+# Args: All arguments passed into script
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  while [ -n "$1" ]                        # loop through args passed in
+  do
+    case "$1" in
+      -h|--help)
+        usage
+        ;;
+      -v|--verbose) 
+        verbose=2
+        ;;
+      -x|--debug)                          # turn trace on
+         set -vx
+         ;;
+      *)
+	echo "ERROR: Too many arguments: $1"
+	usage 
+        ;;
+    esac
+    shift
+  done
+ }                                         # parseArgs()
+
+#+--------------------------------------------------------------------------+
+function doTest()
+# test recording with default microphone
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  # get microphone's sample rate, # of channels and format
+  rate=`grep rate: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'` # there could be multiple mic's
+  if [ "$verbose" = 2 ]; then
+    echo "rate = $rate"
+  fi    
+  if [ ${#rate} = 0 ]; then                # no mic found
+    echo "ERROR: no microphone found with command grep rate: /proc/asound/card*/pcm0c/sub0/hw_params"
+    exit 4                                 # cannot perform operation
+  fi
+  channels=`grep channels: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'`
+  if [ "$verbose" = 2 ]; then
+    echo "channels = $channels"
+  fi    
+  if [ ${#channels} = 0 ]; then            # number of channels not found
+    echo "WARNING: did not find number of channels - assuming 1"
+    channels=1                             # assume 1 channel
+  fi
+  format=`grep ^format: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'`
+  if [ "$verbose" = 2 ]; then
+    echo "format = $format"
+  fi    
+  if [ ${#format} = 0 ]; then              # format not found
+    echo "WARNING: did not find format - ignoring" # leave empty
+  else
+    format="-f $format"                    # add -f flag
+  fi
+  
+  # put the arecord command together and run it
+  cmd="arecord $format -c $channels -d 5 -r $rate /tmp/test-mic.wav"
+  echo "Testing your microphone for 5 seconds - SAY SOMETHING!"
+  echo "INFO: running command: $cmd"
+  $cmd                                     # run the command
+  rc=$?
+  if [ "$rc" != 0 ]; then                  # something didn't work
+    echo "ERROR: command $cmd failed with $rc"
+    exit $rc                               # not successful
+  fi
+ }                                         # doTest()
+
+#+--------------------------------------------------------------------------+
+# Global variables"
+verbose=1                                  # verbosity
+
+# main()
+parseArgs $@                                # parse arguments
+doTest                                      # perform the test 
+

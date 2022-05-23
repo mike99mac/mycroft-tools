@@ -64,7 +64,7 @@ function parseArgs()
 	  echo "ERROR: Unrecognized flag: $1"
 	  usage                            # give help
         else
-          skillType="all"
+          skillsType="all"
         fi
         ;;
       -l|--long)
@@ -75,7 +75,7 @@ function parseArgs()
 	  echo "ERROR: Unrecognized flag: $1"
 	  usage                            # give help
         else
-          skillType="uninstalled"
+          skillsType="uninstalled"
         fi
         ;;
       -x|--debug)                          # turn trace on
@@ -87,6 +87,7 @@ function parseArgs()
 	  exit 4 
         else
           pattern=$1
+	  skillsType="certain"
 	fi   
         ;;
     esac
@@ -119,16 +120,18 @@ function listSkills()
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  local filterClause=""                    # no search filter
+  echo "Searching $skillsType skills ..."
   if [ ${#pattern} != 0 ]; then            # search pattern passed in 
-    filterClause="| grep $pattern"         # add search filter
-  fi
-  if [ "$skillsType" = all ]; then         # show all skills
-    output=`mycroft-msm list`
+    output=`mycroft-msm list 2>/dev/null | grep $pattern`
+    if [ ${#output} = 0 ]; then            # skill not found
+      output="No skills found matching: $pattern"
+    fi   
+  elif [ "$skillsType" = all ]; then       # show all skills
+    output=`mycroft-msm list 2>/dev/null`
   elif [ "$skillsType" = installed ]; then # show just skills installed
-    output=`mycroft-msm list 2>&1 | grep installed`
+    output=`mycroft-msm list 2>/dev/null | grep installed`
   else                                     # assume 'unistalled'
-    output=`mycroft-msm list | grep -v installed`
+    output=`mycroft-msm list 2>/dev/null | grep -v installed`
   fi
  }                                         # listSkills()
 
