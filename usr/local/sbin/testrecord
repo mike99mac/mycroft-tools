@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# testrecord - test recording with default microphone
+# testrecord - test recording with default or specified microphone or just list info
 #
 #+--------------------------------------------------------------------------+
 function usage()
@@ -14,7 +14,9 @@ function usage()
   echo "Usage: testrecord [OPTIONS]" 
   echo ""
   echo "OPTIONS:"
+  echo "  -c|--cardnum CARD Card number to use - needed when there are multiple microphones"
   echo "  -h|--help         Give help (this screen)"
+  echo "  -l|--list         Just list microphone info - do not record"
   echo "  -v|--verbose      Increase verbosity" 
   echo "  -x|--debug        Print commands and arguments as they are executed"
   exit 51
@@ -32,8 +34,19 @@ function parseArgs()
   while [ -n "$1" ]                        # loop through args passed in
   do
     case "$1" in
+      -c|--cardnum)
+        if [ $# = 0 ]; then                # CARD not passed in
+          echo "ERROR! CARD not passed in after $1"
+          usage                            # give help
+        fi
+        shift                              # get to next arg
+        cardToUse=$1
+        ;;
       -h|--help)
         usage
+        ;;
+      -l|--list)
+        actionType="list"
         ;;
       -v|--verbose) 
         verbose=2
@@ -51,43 +64,56 @@ function parseArgs()
  }                                         # parseArgs()
 
 #+--------------------------------------------------------------------------+
-function doTest()
-# test recording with default microphone
+function recordCard()
+# Record audio from a specific card 
+# Arg 1: card number
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  # get microphone's sample rate, # of channels and format
-  rate=`grep rate: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'` # there could be multiple mic's
+  local cardNum=$1
+  local cardDir="/proc/asound/card$cardNum/pcm0c/sub0"
+  if [ ! -d $cardDir ]; then
+    echo "Uh-oh! $cardDir is not a directory"
+    exit 4
+  fi
+  local hw_paramsFile="$cardDir/hw_params"
+  if [ ! -f $hw_paramsFile ]; then
+    echo "Uh-oh! $hw_paramsFile is not a file"
+    exit 4
+  fi
+
+  # try to get rate, num channels and format from the hw_params file, or use defaults
+  local rateClause=`grep rate: $cardDir/hw_params | awk '{print $2}'` 
   if [ "$verbose" = 2 ]; then
     echo "rate = $rate"
   fi    
-  if [ ${#rate} = 0 ]; then                # no mic found
-    echo "ERROR: no microphone found with command grep rate: /proc/asound/card*/pcm0c/sub0/hw_params"
-    exit 4                                 # cannot perform operation
-  fi
-  channels=`grep channels: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'`
-  if [ "$verbose" = 2 ]; then
-    echo "channels = $channels"
-  fi    
-  if [ ${#channels} = 0 ]; then            # number of channels not found
-    echo "WARNING: did not find number of channels - assuming 1"
-    channels=1                             # assume 1 channel
-  fi
-  format=`grep ^format: /proc/asound/card*/pcm0c/sub0/hw_params | awk '{print $2}'`
-  if [ "$verbose" = 2 ]; then
-    echo "format = $format"
-  fi    
-  if [ ${#format} = 0 ]; then              # format not found
-    echo "WARNING: did not find format - ignoring" # leave empty
+  if [ ${#rateClause} != 0 ]; then         # a rate was found 
+    rateClause="-r $rateClause"            # add -r flag
   else
-    format="-f $format"                    # add -f flag
+    rateClause="-r 44100"                  # default to 44100 bit sample rate
+  fi
+  local channelsClause=`grep channels: $hw_paramsFile | awk '{print $2}'`
+  if [ "$verbose" = 2 ]; then
+    echo "channelsClause = $channelsClause"
+  fi    
+  if [ ${#channelsClause} != 0 ]; then     # number of channels found
+    channelsClause="-c $channelsClause"    # add -c flag else default to 1 channel  
+  fi
+  local formatClause=`grep ^format: $hw_paramsFile | awk '{print $2}'`
+  if [ "$verbose" = 2 ]; then
+    echo "formatClause = $formatClause"
+  fi 
+  if [ ${#formatClause} != 0 ]; then       # format found in hw_params file
+    formatClause="-f $formatClause"        # add -f flag
+  else
+    formatClause="-f S24_LE"               # default to 24 bit format
   fi
   
   # put the arecord command together and run it
-  cmd="arecord $format -c $channels -d 5 -r $rate /tmp/test-mic.wav"
-  echo "Testing your microphone for 5 seconds - SAY SOMETHING!"
+  cmd="arecord $rateClause $channelsClause $formatClause -d $numSecs /tmp/test-mic.wav"
+  echo "Testing your microphone for $numSecs seconds - SAY SOMETHING!"
   echo "INFO: running command: $cmd"
   $cmd                                     # run the command
   rc=$?
@@ -95,13 +121,95 @@ function doTest()
     echo "ERROR: command $cmd failed with $rc"
     exit $rc                               # not successful
   fi
- }                                         # doTest()
+ }                                         # recordCard()
+
+#+--------------------------------------------------------------------------+
+function listCard()
+# List attributes of a specific card
+# Arg 1: card number
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  local cardNum=$1
+
+  local cardDir="/proc/asound/card$cardNum/pcm0c/sub0"
+  echo "-------------------------------"
+  echo "Microphone number $cardNum:"
+  echo "Information file: $cardDir/info"
+  cat $cardDir/info                        # show contents of file
+  echo -n "Status: "
+  cat $cardDir/status                      # show status file 
+  echo -n "hw_params: "
+  cat $cardDir/hw_params                   # show hw_params file 
+ }                                         # listCard()
+
+#+--------------------------------------------------------------------------+
+function performAction()
+# test recording with specific microphone or list info
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  # get fully qualified command
+  local arecordCmd=`which arecord`
+  if [ ${#arecordCmd} = 0 ]; then          # arecord not found
+    echo "Uh-oh! the arecord command is not found - is alsa-utils installed?"
+    return 4
+  fi
+  
+  # get get mic(s) card number(s) and the number of mics found 
+  local micCards=`$arecordCmd -l | grep ^card | awk '{print $2}' | sed 's/://g' | xargs`
+  local micCount=`echo $micCards | wc -w`
+
+  # actions for 0, 1 or multiple cards found 
+  case $micCount in
+    0)                                     # no cards found
+      echo "Uh-Oh!  did not find any microphones - output of $arecordCmd -l:"
+      $arecordCmd -l
+      ;;
+    1) 
+      if [ "$actionType" = record ]; then 
+        if [ "$cardToUse" = default ]; then # card not passed in
+          cardToUse=$micCards
+        fi
+        recordCard $cardToUse 
+      else                                 # assume list
+        echo "Found 1 microphone"
+        listCard $micCards
+      fi
+      ;;
+    2)                                     # more than one mic found
+      if [ "$actionType" = record ]; then 
+        if [ "$cardToUse" = default ]; then 
+          echo "Uh-oh! found multiple microphones"
+          echo "Specify which to use with -c|--cardnum"
+          echo
+          usage                            # give help
+        else
+          recordCard $cardToUse
+        fi
+      else                                 # assume list
+        echo "Found $micCount microphones"
+        local nextCard
+        for nextCard in $micCards; do
+          listCard $nextCard
+        done      
+      fi
+      ;;
+  esac
+ }                                         # performAction()
 
 #+--------------------------------------------------------------------------+
 # Global variables"
-verbose=1                                  # verbosity
+actionType="record"                        # "record" or "list"
+cardToUse="default"                        # "default" or card number
+numSecs="5"                                # number of seconds to record
+verbose=1                                  # verbosity "1" or "2"
 
 # main()
-parseArgs $@                                # parse arguments
-doTest                                      # perform the test 
-
+parseArgs $@                               # parse arguments
+performAction                              # perform the test 
+exit $?                                    # pass on return code
