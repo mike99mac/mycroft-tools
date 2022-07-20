@@ -68,10 +68,13 @@ function doList()
     code=$(echo $data | awk '{ print $NF }' )
     code_time=$(echo $data | awk '{ print $1" "$2 }')
     
-    echo "Pairing code: ${code}"
-    echo "Generated   : ${code_time%.*}"   # chop off milliseconds
+    echo                                   # leave some room
+    echo "Enter code at: https://account.mycroft.ai/pair"
+    echo "Pairing code : ${code}"
+    echo "Generated    : ${code_time%.*}"  # chop off milliseconds
+    echo                                   # leave some room
   else
-    echo "No pairing code found in $skills_log"
+    echo "ERROR: No pairing code found in $skills_log"
     exit 1
   fi
  }                                         # doList()
