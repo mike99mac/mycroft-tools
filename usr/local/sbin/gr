@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# gr - short command for grep but don't output errors
+#
+grep $@ 2>/dev/null
