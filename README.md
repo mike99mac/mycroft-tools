@@ -1,6 +1,7 @@
 # mycroft-tools
 Line commands to be used with Mycroft running on Linux
 ```
+  * gr             - A grep wrapper that does not send output to stderr
   * lsenv          - List the Mycroft environment - what services are running?
   * lsintent       - List Mycroft intents - What can I say?
   * lsmycrofttools - List all tools in the mycroft-tools repo (this file)
@@ -26,4 +27,5 @@ Date          Description
 	      Added help (-h|--help) for all scripts 
               Fixed bugs
 15 Aug 2022   Updated lsenv for better and more concise output	      
+              Added 'gr' - a grep wrapper that does not send output to stderr
 ```
