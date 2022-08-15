@@ -25,4 +25,5 @@ Date          Description
                 lsmycrofttools - list the Mycroft pairing code
 	      Added help (-h|--help) for all scripts 
               Fixed bugs
+15 Aug 2022   Updated lsenv for better and more concise output	      
 ```
