@@ -61,22 +61,23 @@ function listService()
 
   local theService=$1
 
+  echo "Status of $theService:"
   local tempFile=/tmp/fubar
   /usr/sbin/service $theService status > $tempFile 
-  grep -q "active (running)" $tempFile 
-  if [ $? = 0 ]; then                      # found "active (running)"
-    echo "  -) $theService is running as a service"
+  local activeLine=`grep "active (running)" $tempFile 2>/dev/null`
+  if [ ${#activeLine} != 0 ]; then         # found "active (running)"
+    echo " -) $theService is running as a service"
+    echo "$activeLine" | sed 's/^ //g'
   else
-    echo "  -) WARNING: Service $theService is not running:"
- #   cat $tempFile
+    echo " -) WARNING: Service $theService is not running ... checking for processes ..."
+    local procs=`ps -ef | grep $theService | grep -v grep`
+    if [ ${#procs} != 0 ]; then              # matching process
+      echo "    Found matching processes:"
+      echo "$procs" | sed 's/^/    /g'
+    fi  
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
-  local procs=`ps -ef | grep $theService | grep -v grep`
-  if [ ${#procs} != 0 ]; then              # matching process
-    echo "Found matching processes:"
-    echo "$procs"
-  fi  
-  echo "------------------------------------------------------"
+  echo "----------------------------------------------------------------"
  }                                         # listService()
 
 #+--------------------------------------------------------------------------+
@@ -87,24 +88,35 @@ function doList()
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  echo "Status of the Mycroft stack:"
   listService mycroft
-  listService emby 
-  listService jellyfin
+  listService emby-server 
+  # need emby or jellyfin, but not both
+  # listService jellyfin
+
+  # pulseaudio does not run as a service - check for processes
   local psout
   psout=`ps -ef | grep pulseaudio  | grep -v grep`
   local numLines=`echo "$psout" | wc -l`
+  echo "Status of pulseaudio:"
   if [ "$numLines" = 1 ]; then             # expected
-    echo "  -) pulseaudio is running as a process"
+    echo " -) pulseaudio is running as a process:"
+    echo "    $psout"
   else                                     # not expected
-    echo "  -) WARNING: Unexpected output from ps -ef | grep pulseaudio  | grep -v grep :"
+    echo " -) WARNING: Unexpected output from ps -ef | grep pulseaudio  | grep -v grep :"
     echo $psout
   fi   
   echo "------------------------------------------------------"
 
+  # also consicely list IP address, temperature, CPU and memory usage
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
-  echo "IP address: $IPaddr"
-  /usr/local/sbin/lstemp                   # show the temp of the RasPi
+  echo "IP address:  $IPaddr"
+  /usr/local/sbin/lstemp | sed 's/^Raspberry Pi //g' # temp of the RasPi
+  CPUusage=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
+  echo -n "CPU usage:   "
+  printf "%.2f" $CPUusage
+  echo "%"
+  echo "Memory usage:"
+  free -h | sed 's/^/  /g'
  }                                         # doList()
 
 #+--------------------------------------------------------------------------+
