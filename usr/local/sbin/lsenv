@@ -66,19 +66,62 @@ function listService()
   /usr/sbin/service $theService status > $tempFile 
   local activeLine=`grep "active (running)" $tempFile 2>/dev/null`
   if [ ${#activeLine} != 0 ]; then         # found "active (running)"
-    echo " -) $theService is running as a service"
+    echo " -) $theService is running as a service:"
     echo "$activeLine" | sed 's/^ //g'
   else
-    echo " -) WARNING: Service $theService is not running ... checking for processes ..."
+    echo " -) WARNING: $theService is not running as a service ... checking for processes ..."
     local procs=`ps -ef | grep $theService | grep -v grep`
     if [ ${#procs} != 0 ]; then              # matching process
       echo "    Found matching processes:"
       echo "$procs" | sed 's/^/    /g'
+    else
+      echo "    WARNING: no processes matching $theService found"  
     fi  
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
   echo "----------------------------------------------------------------"
  }                                         # listService()
+
+:
+#!/bin/bash 
+#+--------------------------------------------------------------------------+
+function getCPU()
+# Get CPU usage for 4 seconds then average iterations 2-4 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo -n "CPU usage:" 
+  local cpu_total=0
+  for i in 1 2 3 4; do
+    # Get the first line with aggregate of all CPUs 
+    cpu_now=($(head -n1 /proc/stat)) 
+    # Get all columns but skip the first (which is the "cpu" string) 
+    cpu_sum="${cpu_now[@]:1}" 
+    # Replace the column seperator (space) with + 
+    cpu_sum=$((${cpu_sum// /+})) 
+    # Get the delta between two reads 
+    cpu_delta=$((cpu_sum - cpu_last_sum)) 
+    # Get the idle time Delta 
+    cpu_idle=$((cpu_now[4]- cpu_last[4])) 
+    # Calc time spent working 
+    cpu_used=$((cpu_delta - cpu_idle)) 
+    # Calc percentage 
+    cpu_usage=$((100 * cpu_used / cpu_delta)) 
+    
+    # Keep this as last for our next read 
+    cpu_last=("${cpu_now[@]}") 
+    cpu_last_sum=$cpu_sum 
+    
+    if [ "$i" != 1 ]; then                 # use iterations 2-4 
+      let cpu_total=$cpu_total+$cpu_usage
+    fi
+    sleep 1 
+  done
+  let cpu_usage=$cpu_total/3               # calculate average
+  echo "   $cpu_usage%"                    # show it
+ }                                         # getCPU()
 
 #+--------------------------------------------------------------------------+
 function doList()
@@ -111,12 +154,13 @@ function doList()
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
   echo "IP address:  $IPaddr"
   /usr/local/sbin/lstemp | sed 's/^Raspberry Pi //g' # temp of the RasPi
-  CPUusage=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
-  echo -n "CPU usage:   "
-  printf "%.2f" $CPUusage
-  echo "%"
+
+  # get memory usage
   echo "Memory usage:"
   free -h | sed 's/^/  /g'
+
+  # get CPU usage
+  getCPU  
  }                                         # doList()
 
 #+--------------------------------------------------------------------------+
