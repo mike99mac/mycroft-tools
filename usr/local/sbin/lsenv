@@ -131,6 +131,7 @@ function doList()
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
+  clear                                    # clear the screen
   listService mycroft
   listService emby-server 
   # need emby or jellyfin, but not both
