@@ -212,4 +212,13 @@ verbose=1                                  # verbosity "1" or "2"
 # main()
 parseArgs $@                               # parse arguments
 performAction                              # perform the test 
-exit $?                                    # pass on return code
+retVal=$?                                  # get return code
+if [ $retVal != 0 ]; then
+  exit $retVal
+elif [ ! -x /usr/local/sbin/testplay ]; then
+  echo "ERROR: did not executable file /usr/local/sbin/testplay" ];
+  exit 2
+fi
+echo "Calling testplay to play back the recording ..."
+/usr/local/sbin/testplay
+exit $?
