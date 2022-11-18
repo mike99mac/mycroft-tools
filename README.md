@@ -10,6 +10,7 @@ Line commands to be used with Mycroft running on Linux
   * lsskills       - List Mycroft skills installed or not installed
   * lstemp         - Report the temperature of the Raspberry Pi
   * lsvocab        - List Mycroft vocabularies - what are the pieces of requests recognized?
+  * lsvocab        - List Mycroft vocabularies - what are the pieces of requests recognized?
   * testplay       - Play back a recorded file to test your speakers
   * testrecord     - Record for a short while and save to a file to test your microphone
 ```
