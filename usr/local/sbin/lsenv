@@ -72,7 +72,7 @@ function listService()
     echo " -) WARNING: $theService is not running as a service ... checking for processes ..."
     local procs=`ps -ef | grep $theService | grep -v grep`
     if [ ${#procs} != 0 ]; then              # matching process
-      echo "    Found matching processes:"
+      echo "    Found matching $theService processes:"
       echo "$procs" | sed 's/^/    /g'
     else
       echo "    WARNING: no processes matching $theService found"  
@@ -133,21 +133,23 @@ function doList()
 
   clear                                    # clear the screen
   listService mycroft
+  # TODO: emby will go away
   listService emby-server 
-  # need emby or jellyfin, but not both
-  # listService jellyfin
+  listService mpd 
 
   # pulseaudio does not run as a service - check for processes
   local psout
   psout=`ps -ef | grep pulseaudio  | grep -v grep`
   local numLines=`echo "$psout" | wc -l`
   echo "Status of pulseaudio:"
-  if [ "$numLines" = 1 ]; then             # expected
+  if [ "$numLines" = 0 ]; then  
+    echo " -) WARNING: pulseaudio is not running as a process:"
+  elif [ "$numLines" = 1 ]; then           # expected
     echo " -) pulseaudio is running as a process:"
     echo "    $psout"
-  else                                     # not expected
-    echo " -) WARNING: Unexpected output from ps -ef | grep pulseaudio  | grep -v grep :"
-    echo $psout
+  else                                     # more than one process
+    echo " -) WARNING: More than one pulseaudio process running:" 
+    echo "$psout"
   fi   
   echo "------------------------------------------------------"
 

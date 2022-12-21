@@ -113,7 +113,7 @@ function recordCard()
   
   # put the arecord command together and run it
   cmd="arecord $rateClause $channelsClause $formatClause -d $numSecs /tmp/test-mic.wav"
-  echo "Testing your microphone for $numSecs seconds - SAY SOMETHING!"
+  echo "Testing your microphone for $numSecs seconds ==========> SAY SOMETHING!"
   echo "INFO: running command: $cmd"
   $cmd                                     # run the command
   rc=$?

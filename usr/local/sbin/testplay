@@ -61,7 +61,11 @@ function doTest()
   if [ ! -f $testFile ]; then 
     echo "ERROR: did note find test recording in file $testFile"
     echo "Did you run testrecord?"
+    exit 1
   else   
+    if [ $verbose -gt 1 ]; then
+      echo "calling command: aplay $testFile"
+    fi
     aplay $testFile 
   fi	  
  }                                         # doTest()
