@@ -79,7 +79,7 @@ function listService()
     fi  
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
-  echo "----------------------------------------------------------------"
+  echo $dashes 
  }                                         # listService()
 
 :
@@ -132,9 +132,10 @@ function doList()
   : STACK:  ${FUNCNAME[@]}
 
   clear                                    # clear the screen
+  echo $dashes 
   listService mycroft
-  # TODO: emby will go away
-  listService emby-server 
+  # TODO: delete when final 
+  # listService emby-server 
   listService mpd 
 
   # pulseaudio does not run as a service - check for processes
@@ -151,7 +152,7 @@ function doList()
     echo " -) WARNING: More than one pulseaudio process running:" 
     echo "$psout"
   fi   
-  echo "------------------------------------------------------"
+  echo $dashes 
 
   # also consicely list IP address, temperature, CPU and memory usage
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
@@ -164,10 +165,12 @@ function doList()
 
   # get CPU usage
   getCPU  
+  echo $dashes 
  }                                         # doList()
 
 #+--------------------------------------------------------------------------+
 # Global variables"
+dashes="---------------------------------------------------------------------------------"
 verbose=1                                  # verbosity
 
 # main()
