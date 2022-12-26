@@ -1,6 +1,7 @@
 # mycroft-tools
 Line commands to be used with Mycroft running on Linux
 ```
+  * bash_profile   - Can be copied to ~ as .bash_profile to add shortcuts
   * gr             - A grep wrapper that does not send output to stderr
   * lsenv          - List the Mycroft environment - what services are running?
   * lsintent       - List Mycroft intents - What can I say?
