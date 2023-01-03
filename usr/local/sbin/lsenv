@@ -141,10 +141,10 @@ function doList()
   # pulseaudio does not run as a service - check for processes
   local psout
   psout=`ps -ef | grep pulseaudio  | grep -v grep`
-  local numLines=`echo "$psout" | wc -l`
+  local numLines=`echo "$psout" | wc -w`
   echo "Status of pulseaudio:"
   if [ "$numLines" = 0 ]; then  
-    echo " -) WARNING: pulseaudio is not running as a process:"
+    echo " -) WARNING: pulseaudio is not running as a process"
   elif [ "$numLines" = 1 ]; then           # expected
     echo " -) pulseaudio is running as a process:"
     echo "    $psout"
