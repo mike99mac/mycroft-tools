@@ -63,7 +63,7 @@ function listService()
 
   echo "Status of $theService:"
   local tempFile=/tmp/fubar
-  /usr/sbin/service $theService status > $tempFile 
+  /usr/sbin/service $theService status > $tempFile 2>/dev/null
   local activeLine=`grep "active (running)" $tempFile 2>/dev/null`
   if [ ${#activeLine} != 0 ]; then         # found "active (running)"
     echo " -) $theService is running as a service:"
@@ -134,26 +134,10 @@ function doList()
   clear                                    # clear the screen
   echo $dashes 
   listService mycroft
-  # TODO: delete when final 
   # listService emby-server 
   listService mpd 
-
-  # pulseaudio does not run as a service - check for processes
-  local psout
-  psout=`ps -ef | grep pulseaudio  | grep -v grep`
-  local numLines=`echo "$psout" | wc -w`
-  echo "Status of pulseaudio:"
-  if [ "$numLines" = 0 ]; then  
-    echo " -) WARNING: pulseaudio is not running as a process"
-  elif [ "$numLines" = 1 ]; then           # expected
-    echo " -) pulseaudio is running as a process:"
-    echo "    $psout"
-  else                                     # more than one process
-    echo " -) WARNING: More than one pulseaudio process running:" 
-    echo "$psout"
-  fi   
-  echo $dashes 
-
+  listService pulseaudio 
+  
   # also consicely list IP address, temperature, CPU and memory usage
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
   echo "IP address:  $IPaddr"
