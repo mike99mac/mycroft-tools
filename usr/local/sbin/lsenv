@@ -137,6 +137,7 @@ function doList()
   # listService emby-server 
   listService mpd 
   listService pulseaudio 
+  listService pipewire 
   
   # also consicely list IP address, temperature, CPU and memory usage
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
