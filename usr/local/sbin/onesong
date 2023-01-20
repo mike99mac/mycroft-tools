@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# onesone - play one song with mpc 
+#
+echo "Running commands: mpc clear; mpc search title "yesterday" | mpc add; mpc play"
+mpc clear; mpc search title "yesterday" | mpc add; mpc play

@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# lsstations - list the saved radio stations 
+#
+echo "radion stations from /opt/mycroft/skills/mpc-skill-mike99mac/radio.stations.csv"
+echo
+cat /opt/mycroft/skills/mpc-skill-mike99mac/radio.stations.csv
