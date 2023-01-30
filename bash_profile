@@ -11,3 +11,5 @@ export PLA="/opt/mycroft/skills/mycroft-playback-control.mycroftai" # playback c
 export SKI="/opt/mycroft/skills"
 export SYS="/etc/systemd/system"
 export Z="/usr/local/sbin"
+export DBUS_SESSION_BUS_ADDRESS="/run/user/1000/bus" 
+export XDG_RUNTIME_DIR="/run/user/1000"

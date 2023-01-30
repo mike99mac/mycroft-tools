@@ -68,6 +68,10 @@ function listService()
   if [ ${#activeLine} != 0 ]; then         # found "active (running)"
     echo " -) $theService is running as a service:"
     echo "$activeLine" | sed 's/^ //g'
+    if [ "$theService" = pulseaudio ]; then # always show pulse processes
+      echo "    pulseaudio processes:"
+      ps -ef | grep $theService | grep -v grep | sed 's/^/    /g'
+    fi
   else
     echo " -) WARNING: $theService is not running as a service ... checking for processes ..."
     local procs=`ps -ef | grep $theService | grep -v grep`
