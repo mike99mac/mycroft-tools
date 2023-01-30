@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# mpdlog - show the end of the mpd log file
+#
+tail -44 /var/log/mpd/mpd.log

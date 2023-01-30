@@ -63,6 +63,11 @@ function doList()
   skills_log=/var/log/mycroft/skills.log
   string="Pairing code"
 
+  if [ ! -f $skills_log ]; then 
+    echo "Skills log file $skills_log not found"
+    exit 1
+  fi
+
   if grep -q "$string" $skills_log; then   # found string
     data=$(grep "${string}" $skills_log | tail -n 1)
     code=$(echo $data | awk '{ print $NF }' )
