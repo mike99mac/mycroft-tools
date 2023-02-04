@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# buttons - start a virtual environment then call buttons.py to poll for button presses 
+#
+source /home/pi/mycroft-core/venv-activate.sh # start a virtual environment
+/usr/local/sbin/buttons.py &                  # run buttons.py in the background

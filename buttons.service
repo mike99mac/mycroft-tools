@@ -1,0 +1,15 @@
+[Unit]
+Description=buttons service to poll GPIO pins for button presses
+After=mycroft.service
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/
+ExecStart=nohup /usr/local/sbin/buttons 
+ExecStop=/bin/kill -s SIGINT -$MAINPID
+Type=forking
+Restart=no
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
+
+[Install]
+WantedBy=multi-user.target

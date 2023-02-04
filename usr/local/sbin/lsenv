@@ -138,7 +138,7 @@ function doList()
   clear                                    # clear the screen
   echo $dashes 
   listService mycroft
-  # listService emby-server 
+  listService buttons
   listService mpd 
   listService pulseaudio 
   listService pipewire 

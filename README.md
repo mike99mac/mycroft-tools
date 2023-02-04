@@ -2,6 +2,9 @@
 Line commands to be used with Mycroft running on Linux
 ```
   * bash_profile     Can be copied to ~ as .bash_profile to add shortcuts
+  * buttons          Script to call buttons.py  
+  * buttons.py       Poll GPIO pins for button presses of previous, stop and next
+  * buttons.service  Systemd file to start buttons as a daemon 
   * gr               A grep wrapper that does not send output to stderr
   * lsenv            List the Mycroft environment - what services are running?
   * lsintent         List Mycroft intents - What can I say?
