@@ -86,8 +86,6 @@ function listService()
   echo $dashes 
  }                                         # listService()
 
-:
-#!/bin/bash 
 #+--------------------------------------------------------------------------+
 function getCPU()
 # Get CPU usage for 4 seconds then average iterations 2-4 

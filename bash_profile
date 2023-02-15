@@ -1,7 +1,6 @@
 alias la='ls -latr'
 alias vi=/usr/bin/vim
-alias venv='source /home/pi/mycroft-core/venv-activate.sh'          # start a venv
-alias rmvenv=mycroft-venv-deactivate                                # remove a venv
+alias venv='source /home/pi/ovos-core/venv/bin/activate'            # start a venv
 export CPS="/home/pi/mycroft-core/mycroft/skills"                   # common play skill
 export DNK="/home/pi/mycroft-dinkum/skills/play-music.mark2"        # Dinkum music
 export LOG="/var/log/mycroft"
