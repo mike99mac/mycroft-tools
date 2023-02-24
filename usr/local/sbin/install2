@@ -59,7 +59,7 @@ function installOVOS
   echo "CVXOPT_SUITESPARSE_SRC_DIR = $CVXOPT_SUITESPARSE_SRC_DIR"
 
   echo "installing packages with pip install ..."
-  runCmd pip install silero adapt wheel tornado ovos-plugin-vlc ovos-test-ocp-audio-plugin ovos-ocp-news-plugin ovos-vad-plugin-webrtcvad
+  runCmd pip install silero adapt wheel tornado ovos-plugin-vlc ovos-test-ocp-audio-plugin ovos-ocp-news-plugin ovos-vad-plugin-webrtcvad ovos-stt-plugin-vosk ovos-stt-plugin-chromium
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
