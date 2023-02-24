@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# install1 - first install script to configure a newly flashed Ubuntu Desktop 22.04
+#            this will prepare it to become an OVOS/Mycroft platform
+#
+echo "installing co-req packages ..."
+sudo apt-get install -y vim git mlocate net-tools python3 python3-pip python3-rpi.gpio python3.10-venv mpc mpd
+
+echo "setting vim to default editor ..."
+ln -s /usr/bin/vim.basic /etc/alternatives/vim  
+
+echo "setting vim to better colors ..."
+grep "colorscheme desert" /etc/vim/vimrc >/dev/null 2>&1
+if [ $? != 0 ]; then 
+  sed -i -e 's/syntax on/syntax on\n  colorscheme desert/g' /etc/vim/vimrc
+fi  
+
+echo "adding groups to users pi and mpd ..."
+sudo usermod -a -G video,pulse,pulse-access,dialout,kmem pi
+sudo usermod -a -G pulse-access,pi mpd
+
+if [ -f ~/mycroft-tools/bash_profile ]; then
+  echo "copying .bash_profile ..."
+  cp  ~/mycroft-tools/bash_profile ~/.bash_profile
+fi  
+
+echo "customizing boot parameters ..."
+cd /boot/firmware
+if [ ! -f config.txt.orig ]; then
+  sudo cp config.txt config.txt.orig
+fi  
+sudo sed -i -e 's/dtparam=audio=on/dtparam=audio=off\ndtparam=spi=off/g' \
+            -e 's/^disable_overscan/# disable_overscan/g' \
+            -e 's/^dtoverlay=vc4-kms-v3/# dtoverlay=vc4-kms-v3/g' config.txt
+
+echo "removing annoying autoindent from vim ..."
+cd /usr/share/vim/vim82
+if [ -f indent.vim ]; then
+  sudo mv indent.vim indent.vim.dontuse
+fi  
+if [ ! -d ~/.vim/indent ]; then
+  mkdir -p ~/.vim/indent
+fi  
+if [ ! -f ~/.vim/indent/html.vim ]; then
+  echo "let b:did_indent = 1" > ~/.vim/indent/html.vim
+fi  

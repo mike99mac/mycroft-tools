@@ -1,0 +1,74 @@
+#!/bin/bash
+#
+# install2 - clone ovos-core, create a venv and configure it to run OVOS
+#
+#+--------------------------------------------------------------------------+
+function runCmd
+# run a command, report time spent and exit if it failes 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  cmd="$@"                                 # get all args
+  eval time $cmd                           # run the command and report time spent
+  rc=$?
+  if [ "$rc" != 0 ]; then                  # it failed
+    echo "ERROR: $cmd returned $rc"
+    exit 1
+  fi
+  echo ""
+ }                                         # runCmd()
+
+#+--------------------------------------------------------------------------+
+function installOVOS
+# Do the work to install ovos-core into a venv 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  if [ -d ~/ovos-core ]; then              # ovos-core directory exists
+    echo -n "~/ovos-core directory exists - do you want to remove it and re-clone? (y/n) "
+    read ans
+    if [ "$ans" != y -a "$ans" != Y ]; then
+      exit 1
+    fi
+    echo "removing ~/ovos-core directory ..."
+    runCmd sudo rm -fr ~/ovos-core
+  fi
+  
+  echo "cloning ovos-core ..."
+  cd                                       # cd to home directory
+  runCmd git clone https://github.com/OpenVoiceOS/ovos-core
+  
+  echo "creating a virtual environment ..."
+  runCmd cd ~/ovos-core
+  runCmd python3 -m venv venv
+  
+  echo "activating virtual environment ..."
+  runCmd source ~/ovos-core/venv/bin/activate
+
+  echo "installing packages with apt-get ..."
+  runcmd sudo apt-get install -y build-essential python3-dev swig libssl-dev libfann-dev libpulse-dev libasound2-dev mpg123 portaudio19-dev python3-pyaudio liblapack-dev libopenblas-dev 
+  
+  echo "download SuiteSparse code and exporting CVXOPT_SUITESPARSE_SRC_DIR ..." 
+  runCmd wget https://people.engr.tamu.edu/davis/SuiteSparse/SuiteSparse-5.4.0.tar.gz
+  runCmd tar xf SuiteSparse-5.4.0.tar.gz
+  export CVXOPT_SUITESPARSE_SRC_DIR=~/ovos-core/SuiteSparse
+  echo "CVXOPT_SUITESPARSE_SRC_DIR = $CVXOPT_SUITESPARSE_SRC_DIR"
+
+  echo "installing packages with pip install ..."
+  runCmd pip install silero adapt wheel tornado ovos-plugin-vlc ovos-test-ocp-audio-plugin ovos-ocp-news-plugin ovos-vad-plugin-webrtcvad
+
+  echo "installing stable version of ovos-core ..."
+  runCmd "pip install ovos-core[all]"
+
+ }                                         # installOVOS()
+
+# main()
+SECONDS=0                                  # reset stopwatch
+installOVOS                                # do the work
+let min=$SECONDS/60
+let sec=$SECONDS%60
+echo "successfully installed ovos-core in $min:$sec"
