@@ -50,7 +50,7 @@ function installOVOS
   runCmd source ~/ovos-core/venv/bin/activate
 
   echo "installing packages with apt-get ..."
-  runcmd sudo apt-get install -y build-essential python3-dev swig libssl-dev libfann-dev libpulse-dev libasound2-dev mpg123 portaudio19-dev python3-pyaudio liblapack-dev libopenblas-dev 
+  runcmd sudo apt-get install -y build-essential python3-dev swig libssl-dev libfann-dev libpulse-dev libasound2-dev mpg123 portaudio19-dev python3-pyaudio liblapack-dev libopenblas-dev flac
   
   echo "download SuiteSparse code and exporting CVXOPT_SUITESPARSE_SRC_DIR ..." 
   runCmd wget https://people.engr.tamu.edu/davis/SuiteSparse/SuiteSparse-5.4.0.tar.gz
@@ -63,7 +63,6 @@ function installOVOS
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
-
  }                                         # installOVOS()
 
 # main()
