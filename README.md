@@ -6,6 +6,8 @@ Line commands to be used with Mycroft running on Linux
   * buttons.py       Poll GPIO pins for button presses of previous, stop and next
   * buttons.service  Systemd file to start buttons as a daemon 
   * gr               A grep wrapper that does not send output to stderr
+  * install1         Script to customize a fresh flash of Ubuntu desktop
+  * install2         Script to install ovos-core
   * lsenv            List the Mycroft environment - what services are running?
   * lsintent         List Mycroft intents - What can I say?
   * lsmycrofttools   List all tools in the mycroft-tools repo (this file)
