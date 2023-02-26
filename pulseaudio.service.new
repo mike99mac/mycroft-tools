@@ -1,0 +1,11 @@
+[Unit]
+Description=Pulseaudio sound server
+After=avahi-daemon.service network.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/pulseaudio --system --disallow-exit --disallow-module-loading --disable-shm --exit-idle-time=-1
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

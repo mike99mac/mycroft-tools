@@ -1,12 +1,12 @@
 [Unit]
-Description=Mycroft AI
+Description=Mycroft derived from ovos-core 
 After=pulseaudio.service
 
 [Service]
 User=pi
 WorkingDirectory=/home/pi/
-ExecStart=/home/pi/mycroft-core/bin/mycroft-start all
-ExecStop=/home/pi/mycroft-core/bin/mycroft-stop
+ExecStart=/home/pi/ovos-core/start-mycroft all
+ExecStop=/home/pi/ovos-core/stop-mycroft
 Type=forking
 Restart=no
 Environment="XDG_RUNTIME_DIR=/run/user/1000"
