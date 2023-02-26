@@ -4,6 +4,7 @@ Line commands to be used with Mycroft running on Linux
   * bash_profile                    Can be copied to ~ as .bash_profile to add shortcuts
   * buttons.service                 Systemd file to start buttons as a daemon 
   * mycroft.service                 Systemd file to start mycroft
+  * mpd.conf                        Sample mpd configuration file
   * tmpfs.service                   Service to mount tmpfs file systems
   * usr/local/sbin/buttons          Script to call buttons.py  
   * usr/local/sbin/buttons.py       Poll GPIO pins for button presses of previous, stop and next

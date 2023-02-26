@@ -99,6 +99,13 @@ function installCoreqs
     runCmd sudo systemctl enable pulseaudio
   fi 
   
+  # configure mpd
+  if [ -f /etc/mpd.conf ]; then
+    runCmd mv /etc/mpd.conf /etc/mpd.conf.orig # rename original
+  fi
+  runCmd cp ~/mycroft-tools/mpd.conf /etc  # copy sample 
+  runCmd systemctl enable mpd              # start mpd at boot
+
   # prevent pulseaudio from starting multiple times
   runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.service.old /usr/lib/systemd/user
   runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.socket /usr/lib/systemd/user
