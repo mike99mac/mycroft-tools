@@ -94,7 +94,6 @@ function getCPU()
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  echo -n "CPU usage:" 
   local cpu_total=0
   for i in 1 2 3 4; do
     # Get the first line with aggregate of all CPUs 
@@ -122,7 +121,50 @@ function getCPU()
     sleep 1 
   done
   let cpu_usage=$cpu_total/3               # calculate average
-  echo "   $cpu_usage%"                    # show it
+  printf "%15s : %s\n" "CPU usage" "$cpu_usage"
+ }                                         # getCPU()
+
+#+--------------------------------------------------------------------------+
+function listTemp()
+# lstemp - show the temperature of the Raspberry Pi based on
+#          the file /sys/class/thermal/thermal_zone0/temp
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  local tempFile="/sys/class/thermal/thermal_zone0/temp"
+  if [ ! -f $tempFile ]; then              # file not found
+    echo "ERROR: did not find $tempFile"
+    exit 1
+  fi
+  local theTemp=`cat /sys/class/thermal/thermal_zone0/temp` # in thousdandths of degrees celcius
+  let theTemp=$theTemp/1000                # convert to degrees Celcius
+  let tempF=$theTemp*9/5+32                # convert to degrees Farenheit
+  echo "CPU temperature : ${theTemp}C / ${tempF}F"
+ }                                         # listTemp()
+
+#+--------------------------------------------------------------------------+
+function tmpfsUsage()
+# Is the directory passed in using a tmpfs? 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  local theDir=$1
+  local answer
+
+  mount | grep $theDir | grep tmpfs >/dev/null 2>&1
+  if [ $? = 0 ]; then                      # directory is using a tmpfs       
+    answer=yes
+  else
+    answer=no
+  fi
+  if [ "$theDir" = ".local/state/mycroft" ]; then # make more readable
+    theDir="Mycroft logs"
+  fi
+  printf "%15s : %s\n" "$theDir" "$answer"
  }                                         # getCPU()
 
 #+--------------------------------------------------------------------------+
@@ -141,18 +183,29 @@ function doList()
   listService pulseaudio 
   listService pipewire 
   
-  # also consicely list IP address, temperature, CPU and memory usage
+  # also list many other settings and status 
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
-  echo "IP address:  $IPaddr"
-  /usr/local/sbin/lstemp | sed 's/^Raspberry Pi //g' # temp of the RasPi
+  printf "%15s : %s\n" "IP address" "$IPaddr"
 
-  # get memory usage
-  echo "Memory usage:"
-  free -h | sed 's/^/  /g'
+  # RasPi temperature
+  listTemp
+
+  # root file system usage
+  local rootUsed=`df -h / | tail -1 | awk '{print $5}'`
+  printf "%15s : %s\n" "Root fs usage" "$rootUsed"
 
   # get CPU usage
   getCPU  
-  echo $dashes 
+
+  # get memory usage
+  echo "Memory usage    :"
+  free -h | sed 's/^/  /g'                 # add two leading spaces
+
+  # are log directories using tmpfs? 
+  echo "tmpfs filesystem?"
+  tmpfsUsage ".local/state/mycroft"
+  tmpfsUsage /var/log 
+  echo
  }                                         # doList()
 
 #+--------------------------------------------------------------------------+
