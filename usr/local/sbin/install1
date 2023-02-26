@@ -19,11 +19,13 @@ echo "adding groups to users pi and mpd ..."
 sudo usermod -a -G video,pulse,pulse-access,dialout,kmem pi
 sudo usermod -a -G pulse-access,pi mpd
 
+# copy a .bash_profile from mycroft-tools
 if [ -f ~/mycroft-tools/bash_profile ]; then
   echo "copying .bash_profile ..."
   cp  ~/mycroft-tools/bash_profile ~/.bash_profile
 fi  
 
+# turn default and vc4 audio off, don't disable monitor overscan
 echo "customizing boot parameters ..."
 cd /boot/firmware
 if [ ! -f config.txt.orig ]; then
@@ -33,6 +35,7 @@ sudo sed -i -e 's/dtparam=audio=on/dtparam=audio=off\ndtparam=spi=off/g' \
             -e 's/^disable_overscan/# disable_overscan/g' \
             -e 's/^dtoverlay=vc4-kms-v3/# dtoverlay=vc4-kms-v3/g' config.txt
 
+# vim - please just give me a newline
 echo "removing annoying autoindent from vim ..."
 cd /usr/share/vim/vim82
 if [ -f indent.vim ]; then
@@ -45,11 +48,14 @@ if [ ! -f ~/.vim/indent/html.vim ]; then
   echo "let b:did_indent = 1" > ~/.vim/indent/html.vim
 fi  
 
-# had a system fill up syslog with 44GB of messages
-echo "preventing rsyslogd from making message storms ..."
-cd /etc
-sudo cp rsyslogd.conf rsyslog.conf.orig
-sudo sed -i 's/module(load="imklog"/# module(load="imklog"/g' rsyslog.conf
+# rsyslog can send a flood of kernel messages
+if [ -f /etc/rsyslog.conf ]; then 
+  echo "preventing rsyslogd from making message storms ..."
+  sudo cp /etc/rsyslogd.conf /etc/rsyslog.conf.orig
+  sudo sed -i 's/module(load="imklog"/# module(load="imklog"/g' /etc/rsyslog.conf
+else
+  echo "WARNING: /etc/rsyslog.conf not found"
+fi
 
 # to lengthen the life of the SD card write logs to tmpfs file systems
 if [ -f ~/mycroft-tools/tmpfs.service ]; then
@@ -57,6 +63,5 @@ if [ -f ~/mycroft-tools/tmpfs.service ]; then
   sudo cp ~/mycroft-tools/tmpfs.service /etc/systemd/system
   sudo systemctl enable tmpfs
 fi
-
 
 
