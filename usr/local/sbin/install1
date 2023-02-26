@@ -12,7 +12,7 @@ ln -s /usr/bin/vim.basic /etc/alternatives/vim
 echo "setting vim to better colors ..."
 grep "colorscheme desert" /etc/vim/vimrc >/dev/null 2>&1
 if [ $? != 0 ]; then 
-  sed -i -e 's/syntax on/syntax on\n  colorscheme desert/g' /etc/vim/vimrc
+  sudo sed -i -e 's/syntax on/syntax on\n  colorscheme desert/g' /etc/vim/vimrc
 fi  
 
 echo "adding groups to users pi and mpd ..."
