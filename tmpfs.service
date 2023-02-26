@@ -1,0 +1,10 @@
+[Unit]
+Description=service for mounting temp file systems over log directories
+Requires=mdmonitor.service local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/tmpfsmnt
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# tmpfsmnt - mount tmpfs file systems over log file directories 
+#
+mount -t tmpfs -o size=100m,mode=1777 tmpfs /var/log
+mount -t tmpfs -o size=100m,mode=1777 tmpfs /home/pi/.local/state/mycroft
+

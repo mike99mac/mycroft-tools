@@ -45,7 +45,18 @@ if [ ! -f ~/.vim/indent/html.vim ]; then
   echo "let b:did_indent = 1" > ~/.vim/indent/html.vim
 fi  
 
+# had a system fill up syslog with 44GB of messages
 echo "preventing rsyslogd from making message storms ..."
 cd /etc
 sudo cp rsyslogd.conf rsyslog.conf.orig
 sudo sed -i 's/module(load="imklog"/# module(load="imklog"/g' rsyslog.conf
+
+# to lengthen the life of the SD card write logs to tmpfs file systems
+if [ -f ~/mycroft-tools/tmpfs.service ]; then
+  echo "copying tmpfs.service ..."
+  sudo cp ~/mycroft-tools/tmpfs.service /etc/systemd/system
+  sudo systemctl enable tmpfs
+fi
+
+
+
