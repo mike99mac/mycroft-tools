@@ -12,7 +12,8 @@ function runCmd
   : STACK:  ${FUNCNAME[@]}
 
   cmd="$@"                                 # get all args
-  eval time $cmd                           # run the command and report time spent
+  # eval time $cmd                           # run the command and report time spent
+  eval $cmd                                # run the command and report time spent
   rc=$?
   if [ "$rc" != 0 ]; then                  # it failed
     echo "ERROR: $cmd returned $rc"
@@ -32,17 +33,15 @@ function installCoreqs
   echo "installing co-req packages ..."
   runCmd sudo apt-get install -y vim git mlocate net-tools python3 python3-pip python3-rpi.gpio python3.10-venv mpc mpd
   
-  echo "setting vim to default editor ..."
-  runCmd ln -s /usr/bin/vim.basic /etc/alternatives/vim  
-  
   echo "setting vim to better colors ..."
   grep "colorscheme desert" /etc/vim/vimrc >/dev/null 2>&1
   if [ $? != 0 ]; then                     # it has not already been added
     sudo sed -i -e 's/syntax on/syntax on\n  colorscheme desert/g' /etc/vim/vimrc
   fi  
   
-  echo "adding groups to users pi and mpd ..."
+  echo "adding groups to user pi ..."
   runCmd sudo usermod -a -G video,pulse,pulse-access,dialout,kmem pi
+  echo "adding groups to user mpd ..."
   runCmd sudo usermod -a -G pulse-access,pi mpd
   
   # copy a .bash_profile from mycroft-tools
@@ -52,14 +51,14 @@ function installCoreqs
   fi  
   
   # turn default and vc4 audio off, don't disable monitor overscan
-  echo "customizing boot parameters ..."
   cd /boot/firmware
   if [ ! -f config.txt.orig ]; then
+    echo "customizing boot parameters ..."
     runCmd sudo cp config.txt config.txt.orig
+    sudo sed -i -e 's/dtparam=audio=on/dtparam=audio=off\ndtparam=spi=off/g' \
+                -e 's/^disable_overscan/# disable_overscan/g' \
+                -e 's/^dtoverlay=vc4-kms-v3/# dtoverlay=vc4-kms-v3/g' config.txt
   fi  
-  sudo sed -i -e 's/dtparam=audio=on/dtparam=audio=off\ndtparam=spi=off/g' \
-              -e 's/^disable_overscan/# disable_overscan/g' \
-              -e 's/^dtoverlay=vc4-kms-v3/# dtoverlay=vc4-kms-v3/g' config.txt
   
   # vim - please just give me a newline
   echo "removing annoying autoindent from vim ..."
@@ -77,8 +76,8 @@ function installCoreqs
   # rsyslog can send a flood of kernel messages
   if [ -f /etc/rsyslog.conf ]; then 
     echo "preventing rsyslogd from making message storms ..."
-    runCmd sudo cp /etc/rsyslogd.conf /etc/rsyslog.conf.orig
-    sudo sed -i 's/module(load="imklog"/# module(load="imklog"/g' /etc/rsyslog.conf
+    runCmd sudo cp /etc/rsyslog.conf /etc/rsyslog.conf.orig
+    sudo sed -i 's/^module(load="imklog"/# module(load="imklog"/g' /etc/rsyslog.conf
   else
     echo "WARNING: /etc/rsyslog.conf not found"
   fi
@@ -87,28 +86,39 @@ function installCoreqs
   if [ -f ~/mycroft-tools/tmpfs.service ]; then
     echo "copying tmpfs.service ..."
     runCmd sudo cp ~/mycroft-tools/tmpfs.service /etc/systemd/system
+    echo "setting tmpfs.service to start at boot ..."
     runCmd sudo systemctl enable tmpfs
   fi
   
   # start pulseaudio as a service
   serviceFile=/etc/systemd/system/pulseaudio.service
   if [ -f $serviceFile ]; then               # do not overwrite
-    echo "WARNING: pulse systemd file $serviceFile already exists"
+    echo "WARNING: pulse systemd file $serviceFile already exists - skipping copy"
   else                                       # copy service file
-    runCmd sudo cp ~/mycroft-tools/pulseaudio.service /etc/systemd/system
+    runCmd sudo cp ~/mycroft-tools/pulseaudio.service.new /etc/systemd/system/pulseaudio.service
     runCmd sudo systemctl enable pulseaudio
   fi 
-  
-  # configure mpd
-  if [ -f /etc/mpd.conf ]; then
-    runCmd mv /etc/mpd.conf /etc/mpd.conf.orig # rename original
-  fi
-  runCmd cp ~/mycroft-tools/mpd.conf /etc  # copy sample 
-  runCmd systemctl enable mpd              # start mpd at boot
 
   # prevent pulseaudio from starting multiple times
+  echo "copying pulseaudio.service.old to /usr/lib/systemd/user"
   runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.service.old /usr/lib/systemd/user
+  echo "copying pulseaudio.socket to /usr/lib/systemd/user"
   runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.socket /usr/lib/systemd/user
+  
+  # configure mpd
+  if [ -f /etc/mpd.conf -a ! -f /etc/mpd.conf.orig ]; then # no backup has been made
+    echo "making backup of /etc/mpd.conf"
+    runCmd sudo mv /etc/mpd.conf /etc/mpd.conf.orig # rename original
+  fi
+  echo "copying sample mpd.conf file to /etc"
+  runCmd sudo cp ~/mycroft-tools/mpd.conf /etc # copy sample 
+  echo "making directory /var/log/mpd ..."
+  runCmd sudo mkdir /var/log/mpd 
+  echo "changing ownership of /var/log/mpd ..."
+  runCmd sudo chown mpd.mpd mpd
+
+  echo "setting mpd to start at boot time"
+  runCmd sudo systemctl enable mpd         # start mpd at boot
  }                                         # installCoreqs()
 
 # main()
@@ -116,5 +126,8 @@ SECONDS=0                                  # reset stopwatch
 installCoreqs                              # do the work
 let min=$SECONDS/60
 let sec=$SECONDS%60
+if [ $sec -lt 10 ]; then
+  sec="0$sec"
+fi
 echo "successfully installed co-reqs for Mycroft in $min:$sec"
 
