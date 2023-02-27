@@ -32,7 +32,7 @@ if [ "$rc" != 0 ]; then                  # error
   exit 2
 fi
 
-cmd="chown pi /usr/local/sbin/*"
+cmd="chown pi.pi /usr/local/sbin/*"
 $cmd
 rc=$?
 if [ "$rc" != 0 ]; then                  # error
