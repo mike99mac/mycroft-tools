@@ -38,6 +38,7 @@ function installCoreqs
   if [ $? != 0 ]; then                     # it has not already been added
     sudo sed -i -e 's/syntax on/syntax on\n  colorscheme desert/g' /etc/vim/vimrc
   fi  
+  echo
   
   echo "adding groups to user pi ..."
   runCmd sudo usermod -a -G video,pulse,pulse-access,dialout,kmem pi
@@ -45,10 +46,8 @@ function installCoreqs
   runCmd sudo usermod -a -G pulse-access,pi mpd
   
   # copy a .bash_profile from mycroft-tools
-  if [ -f ~/mycroft-tools/bash_profile ]; then
-    echo "copying .bash_profile ..."
-    runCmd cp ~/mycroft-tools/bash_profile ~/.bash_profile
-  fi  
+  echo "copying .bash_profile ..."
+  runCmd cp ~/mycroft-tools/bash_profile ~/.bash_profile
   
   # turn default and vc4 audio off, don't disable monitor overscan
   cd /boot/firmware
@@ -74,28 +73,32 @@ function installCoreqs
   fi  
   
   # rsyslog can send a flood of kernel messages
-  if [ -f /etc/rsyslog.conf ]; then 
-    echo "preventing rsyslogd from making message storms ..."
+  if [ -f /etc/rsyslog.conf -a ! -f /etc/rsyslog.conf.orig ]; then 
+    echo "preventing rsyslogd from making log message storms ..."
     runCmd sudo cp /etc/rsyslog.conf /etc/rsyslog.conf.orig
     sudo sed -i 's/^module(load="imklog"/# module(load="imklog"/g' /etc/rsyslog.conf
-  else
-    echo "WARNING: /etc/rsyslog.conf not found"
   fi
   
   # to lengthen the life of the SD card write logs to tmpfs file systems
-  if [ -f ~/mycroft-tools/tmpfs.service ]; then
-    echo "copying tmpfs.service ..."
-    runCmd sudo cp ~/mycroft-tools/tmpfs.service /etc/systemd/system
-    echo "setting tmpfs.service to start at boot ..."
-    runCmd sudo systemctl enable tmpfs
+  if [ ! -f /etc/systemd/system/var-log.mount ]; then
+    echo "copying var-log.mount ..."
+    runCmd sudo cp ~/mycroft-tools/var-log.mount /etc/systemd/system
+    echo "setting service to start at boot ..."
+    runCmd sudo systemctl enable var-log.mount
+  fi
+  if [ ! -f /etc/systemd/system/mycroft-log.mount ]; then
+    echo "copying mycroft-log.mount ..."
+    runCmd sudo cp ~/mycroft-tools/mycroft-log.mount /etc/systemd/system
+    echo "setting service to start at boot ..."
+    runCmd sudo systemctl enable mycroft-log.mount
   fi
   
   # start pulseaudio as a service
   serviceFile=/etc/systemd/system/pulseaudio.service
-  if [ -f $serviceFile ]; then               # do not overwrite
-    echo "WARNING: pulse systemd file $serviceFile already exists - skipping copy"
-  else                                       # copy service file
+  if [ ! -f $serviceFile ]; then   
+    echo "copying pulseaudio service file ..."
     runCmd sudo cp ~/mycroft-tools/pulseaudio.service.new /etc/systemd/system/pulseaudio.service
+    echo "starting pulseaudio at boot time ..."
     runCmd sudo systemctl enable pulseaudio
   fi 
 
@@ -104,18 +107,32 @@ function installCoreqs
   runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.service.old /usr/lib/systemd/user
   echo "copying pulseaudio.socket to /usr/lib/systemd/user"
   runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.socket /usr/lib/systemd/user
-  
+
+  # allow anonymous access to pulseaudio
+  if [ -f /etc/pulse/system.pa -a ! -f /etc/pulse/system.pa.orig ]; then 
+    echo "making backup of /etc/pulse/system.pa file ..."
+    runCmd sudo cp /etc/pulse/system.pa /etc/pulse/system.pa.orig
+  fi
+  echo "allowing anonymous access to pulseaudio ..."
+  runCmd sudo "sed -i 's/^load-module module-native-protocol-unix$/load-module module-native-protocol-unix auth-anonymous=1/g' /etc/pulse/system.pa"
+
   # configure mpd
   if [ -f /etc/mpd.conf -a ! -f /etc/mpd.conf.orig ]; then # no backup has been made
     echo "making backup of /etc/mpd.conf"
-    runCmd sudo mv /etc/mpd.conf /etc/mpd.conf.orig # rename original
+    runCmd sudo cp /etc/mpd.conf /etc/mpd.conf.orig # rename original
   fi
   echo "copying sample mpd.conf file to /etc"
   runCmd sudo cp ~/mycroft-tools/mpd.conf /etc # copy sample 
-  echo "making directory /var/log/mpd ..."
-  runCmd sudo mkdir /var/log/mpd 
+  if [ ! -d /var/log/mpd ]; then
+    echo "making directory /var/log/mpd ..."
+    runCmd sudo mkdir /var/log/mpd 
+  fi
+  if [ ! -f /var/log/mpd/mpd.log ]; then
+    echo "creating file /var/log/mpd/mpd.log ..."
+    runCmd sudo touch /var/log/mpd/mpd.log
+  fi
   echo "changing ownership of /var/log/mpd ..."
-  runCmd sudo chown mpd.mpd mpd
+  runCmd sudo chown mpd.audio /var/log/mpd
 
   echo "setting mpd to start at boot time"
   runCmd sudo systemctl enable mpd         # start mpd at boot
@@ -126,7 +143,7 @@ SECONDS=0                                  # reset stopwatch
 installCoreqs                              # do the work
 let min=$SECONDS/60
 let sec=$SECONDS%60
-if [ $sec -lt 10 ]; then
+if [ $sec -lt 10 ]; then                   # add a leading 0
   sec="0$sec"
 fi
 echo "successfully installed co-reqs for Mycroft in $min:$sec"
