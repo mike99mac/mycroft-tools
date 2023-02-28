@@ -11,10 +11,10 @@ After=swap.target
 
 [Mount]
 What=tmpfs
-Where=/home/pi/.local/state/mycroft
+Where=/home/USER/.local/state/mycroft
 Type=tmpfs
 Options=mode=1777,strictatime,nosuid,nodev
 
 [Install]
-WantedBy=local-fs.target
+WantedBy=multi-user.target
 
