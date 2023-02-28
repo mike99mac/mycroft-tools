@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# installcommon - functions common to install1 and install2 
+#
+#+--------------------------------------------------------------------------+
+function runCmd
+# run a command, report time spent and exit if it failes
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  cmd="$@"                                 # get all args
+  echo "Running: $cmd"                     # show the command
+  eval $cmd                                # run the command
+  rc=$?
+  if [ "$rc" != 0 ]; then                  # it failed
+    echo "ERROR: $cmd returned $rc"
+    exit 1
+  fi
+  echo ""
+ }                                         # runCmd()
+
