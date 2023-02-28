@@ -181,7 +181,7 @@ function doList()
   listService buttons
   listService mpd 
   listService pulseaudio 
-  listService pipewire 
+# listService pipewire 
   
   # also list many other settings and status 
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address

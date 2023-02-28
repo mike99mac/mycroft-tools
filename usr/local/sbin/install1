@@ -80,6 +80,10 @@ function installCoreqs
   fi
   
   # to lengthen the life of the SD card write logs to tmpfs file systems
+  if [ ! -d /home/pi/.local/state/mycroft ]; then 
+    echo "making directory /home/pi/.local/state/mycroft ..."
+    runCmd mkdir -p /home/pi/.local/state/mycroft
+  fi
   if [ ! -f /etc/systemd/system/var-log.mount ]; then
     echo "copying var-log.mount ..."
     runCmd sudo cp ~/mycroft-tools/var-log.mount /etc/systemd/system
@@ -104,7 +108,7 @@ function installCoreqs
 
   # prevent pulseaudio from starting multiple times
   echo "copying pulseaudio.service.old to /usr/lib/systemd/user"
-  runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.service.old /usr/lib/systemd/user
+  runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.service.old /usr/lib/systemd/user/pulseaudio.service
   echo "copying pulseaudio.socket to /usr/lib/systemd/user"
   runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.socket /usr/lib/systemd/user
 
