@@ -63,6 +63,11 @@ function installOVOS
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
+
+  echo "making symlink to start-mycroft.sh ..."
+  runCmd ln -s ~/ovos-core/start-mycroft.sh /usr/local/sbin
+  echo "making symlink to stop-mycroft.sh ..."
+  runCmd ln -s ~/ovos-core/stop-mycroft.sh /usr/local/sbin
  }                                         # installOVOS()
 
 # main()

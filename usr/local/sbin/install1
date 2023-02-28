@@ -4,25 +4,6 @@
 #            this will prepare it to become an OVOS/Mycroft platform
 #
 #+--------------------------------------------------------------------------+
-function runCmd
-# run a command, report time spent and exit if it failes
-#+--------------------------------------------------------------------------+
- {
-  : SOURCE: ${BASH_SOURCE}
-  : STACK:  ${FUNCNAME[@]}
-
-  cmd="$@"                                 # get all args
-  # eval time $cmd                           # run the command and report time spent
-  eval $cmd                                # run the command and report time spent
-  rc=$?
-  if [ "$rc" != 0 ]; then                  # it failed
-    echo "ERROR: $cmd returned $rc"
-    exit 1
-  fi
-  echo ""
- }                                         # runCmd()
-
-#+--------------------------------------------------------------------------+
 function installCoreqs
 # Do the work to install and configure everything to run Mycroft driven by ovos-core
 #+--------------------------------------------------------------------------+
@@ -80,21 +61,23 @@ function installCoreqs
   fi
   
   # to lengthen the life of the SD card write logs to tmpfs file systems
-  if [ ! -d /home/pi/.local/state/mycroft ]; then 
-    echo "making directory /home/pi/.local/state/mycroft ..."
-    runCmd mkdir -p /home/pi/.local/state/mycroft
-  fi
   if [ ! -f /etc/systemd/system/var-log.mount ]; then
     echo "copying var-log.mount ..."
     runCmd sudo cp ~/mycroft-tools/var-log.mount /etc/systemd/system
     echo "setting service to start at boot ..."
     runCmd sudo systemctl enable var-log.mount
   fi
-  if [ ! -f /etc/systemd/system/mycroft-log.mount ]; then
-    echo "copying mycroft-log.mount ..."
-    runCmd sudo cp ~/mycroft-tools/mycroft-log.mount /etc/systemd/system
+  local logDir="/home/$USER/.local/state/mycroft.mount"
+  local mountFile="/etc/systemd/system/home-$USER-.local-state-mycroft.mount"
+  if [ ! -d $logDir ]; then                # log dir not found
+    echo "making mycroft log directory ..."
+    runCmd mkdir -p $logDir 
+  fi
+  if [ ! -f $mountFile ]; then
+    echo "copying mycroft-log.mount and modifying USER ..."
+    runCmd sudo cat ~/mycroft-tools/mycroft-log.mount | sed "s/USER/$USER/g" > $mycroftFile
     echo "setting service to start at boot ..."
-    runCmd sudo systemctl enable mycroft-log.mount
+    runCmd sudo systemctl enable $mycroftFile
   fi
   
   # start pulseaudio as a service
@@ -108,9 +91,9 @@ function installCoreqs
 
   # prevent pulseaudio from starting multiple times
   echo "copying pulseaudio.service.old to /usr/lib/systemd/user"
-  runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.service.old /usr/lib/systemd/user/pulseaudio.service
+  runCmd sudo cp ~/mycroft-tools/pulseaudio.service.old /usr/lib/systemd/user/pulseaudio.service
   echo "copying pulseaudio.socket to /usr/lib/systemd/user"
-  runCmd sudo cp /home/pi/mycroft-tools/pulseaudio.socket /usr/lib/systemd/user
+  runCmd sudo cp ~/mycroft-tools/pulseaudio.socket /usr/lib/systemd/user
 
   # allow anonymous access to pulseaudio
   if [ -f /etc/pulse/system.pa -a ! -f /etc/pulse/system.pa.orig ]; then 
@@ -143,6 +126,8 @@ function installCoreqs
  }                                         # installCoreqs()
 
 # main()
+source installcommon
+
 SECONDS=0                                  # reset stopwatch
 installCoreqs                              # do the work
 let min=$SECONDS/60
