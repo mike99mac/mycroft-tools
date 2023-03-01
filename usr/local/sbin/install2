@@ -51,8 +51,6 @@ function installOVOS
   echo "installing weather skill ..."
   pip install git+https://github.com/OpenVoiceOS/skill-ovos-weather.git
 
-  echo "making symlink to start-mycroft.sh ..."
-  runCmd ln -s ~/ovos-core/start-mycroft.sh /usr/local/sbin
   echo "making symlink to stop-mycroft.sh ..."
   runCmd ln -s ~/ovos-core/stop-mycroft.sh /usr/local/sbin
  }                                         # installOVOS()
