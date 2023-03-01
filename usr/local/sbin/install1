@@ -126,10 +126,11 @@ function installCoreqs
  }                                         # installCoreqs()
 
 # main()
-source installcommon
-
+source installcommon                       # include common functions
 SECONDS=0                                  # reset stopwatch
+
 installCoreqs                              # do the work
+
 let min=$SECONDS/60
 let sec=$SECONDS%60
 if [ $sec -lt 10 ]; then                   # add a leading 0

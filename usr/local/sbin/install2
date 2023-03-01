@@ -3,24 +3,6 @@
 # install2 - clone ovos-core, create a venv and configure it to run OVOS
 #
 #+--------------------------------------------------------------------------+
-function runCmd
-# run a command, report time spent and exit if it failes 
-#+--------------------------------------------------------------------------+
- {
-  : SOURCE: ${BASH_SOURCE}
-  : STACK:  ${FUNCNAME[@]}
-
-  cmd="$@"                                 # get all args
-  eval time $cmd                           # run the command and report time spent
-  rc=$?
-  if [ "$rc" != 0 ]; then                  # it failed
-    echo "ERROR: $cmd returned $rc"
-    exit 1
-  fi
-  echo ""
- }                                         # runCmd()
-
-#+--------------------------------------------------------------------------+
 function installOVOS
 # Do the work to install ovos-core into a venv 
 #+--------------------------------------------------------------------------+
@@ -50,7 +32,7 @@ function installOVOS
   runCmd source ~/ovos-core/venv/bin/activate
 
   echo "installing packages with apt-get ..."
-  runcmd sudo apt-get install -y build-essential python3-dev swig libssl-dev libfann-dev libpulse-dev libasound2-dev mpg123 portaudio19-dev python3-pyaudio liblapack-dev libopenblas-dev flac
+  runCmd sudo apt-get install -y build-essential python3-dev swig libssl-dev libfann-dev libpulse-dev libasound2-dev mpg123 portaudio19-dev python3-pyaudio liblapack-dev libopenblas-dev flac
   
   echo "download SuiteSparse code and exporting CVXOPT_SUITESPARSE_SRC_DIR ..." 
   runCmd wget https://people.engr.tamu.edu/davis/SuiteSparse/SuiteSparse-5.4.0.tar.gz
@@ -64,6 +46,11 @@ function installOVOS
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
 
+  echo "installing date-time skill ..."
+  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-date-time.git
+  echo "installing weather skill ..."
+  pip install git+https://github.com/OpenVoiceOS/skill-ovos-weather.git
+
   echo "making symlink to start-mycroft.sh ..."
   runCmd ln -s ~/ovos-core/start-mycroft.sh /usr/local/sbin
   echo "making symlink to stop-mycroft.sh ..."
@@ -71,8 +58,15 @@ function installOVOS
  }                                         # installOVOS()
 
 # main()
+source installcommon                       # include common functions
 SECONDS=0                                  # reset stopwatch
+
 installOVOS                                # do the work
+
 let min=$SECONDS/60
 let sec=$SECONDS%60
+if [ $sec -lt 10 ]; then                   # add a leading 0
+  sec="0$sec"
+fi
 echo "successfully installed ovos-core in $min:$sec"
+
