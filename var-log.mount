@@ -16,5 +16,5 @@ Type=tmpfs
 Options=mode=1777,strictatime,nosuid,nodev
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=local fs.target
 
