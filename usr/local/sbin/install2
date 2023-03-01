@@ -34,17 +34,17 @@ function installOVOS
   echo "installing packages with apt-get ..."
   runCmd sudo apt-get install -y build-essential python3-dev swig libssl-dev libfann-dev libpulse-dev libasound2-dev mpg123 portaudio19-dev python3-pyaudio liblapack-dev libopenblas-dev flac
   
-  echo "download SuiteSparse code and exporting CVXOPT_SUITESPARSE_SRC_DIR ..." 
-  runCmd wget https://people.engr.tamu.edu/davis/SuiteSparse/SuiteSparse-5.4.0.tar.gz
-  runCmd tar xf SuiteSparse-5.4.0.tar.gz
-  export CVXOPT_SUITESPARSE_SRC_DIR=~/ovos-core/SuiteSparse
-  echo "CVXOPT_SUITESPARSE_SRC_DIR = $CVXOPT_SUITESPARSE_SRC_DIR"
+# echo "download SuiteSparse code and exporting CVXOPT_SUITESPARSE_SRC_DIR ..." 
+# runCmd wget https://people.engr.tamu.edu/davis/SuiteSparse/SuiteSparse-5.4.0.tar.gz
+# runCmd tar xf SuiteSparse-5.4.0.tar.gz
+# export CVXOPT_SUITESPARSE_SRC_DIR=~/ovos-core/SuiteSparse
+# echo "CVXOPT_SUITESPARSE_SRC_DIR = $CVXOPT_SUITESPARSE_SRC_DIR"
 
   echo "installing wheel with pip install ..."
   runCmd pip install wheel                 # wheel needs to be in place before the next big set
 
   echo "installing packages with pip install ..."
-  runCmd pip install silero adapt tornado ovos-plugin-vlc ovos-test-ocp-audio-plugin ovos-ocp-news-plugin ovos-vad-plugin-webrtcvad ovos-stt-plugin-vosk ovos-stt-plugin-chromium
+  runCmd pip install silero tornado ovos-plugin-vlc ovos-ocp-news-plugin ovos-vad-plugin-webrtcvad ovos-stt-plugin-vosk ovos-stt-plugin-chromium
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
