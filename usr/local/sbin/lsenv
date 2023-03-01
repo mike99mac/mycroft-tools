@@ -121,7 +121,7 @@ function getCPU()
     sleep 1 
   done
   let cpu_usage=$cpu_total/3               # calculate average
-  printf "%15s : %s\n" "CPU usage" "$cpu_usage"
+  printf "%15s : %s\n" "CPU usage" "$cpu_usage%"
  }                                         # getCPU()
 
 #+--------------------------------------------------------------------------+
