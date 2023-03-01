@@ -2,16 +2,17 @@
 #
 # start-mycroft.sh - make the log file directory a tmpfs, then start mycroft from ~/ovos-core
 #
-# if no args passed, assume "all"
-if [ $# = 0 ]; then
-  arg1=all
-else
-  arg1=$1
-fi
-
+# check environment
 ovosStartScript=~/ovos-core/start-mycroft.sh
 if [ ! -x $ovosStartScript ]; then
-  echo "ERROR did not find executable $ovosStartScript - is ovos-core installed?"
+  echo "ERROR: did not find executable $ovosStartScript - is ovos-core installed?"
+  exit 1
+elif [ ${#VIRTUAL_ENV} = 0 ]; then           # not in a venv
+  if [ -f /home/pi/ovos-core/venv/bin/activate ]; then # activate it
+    source /home/pi/ovos-core/venv/bin/activate 
+  else
+    echo "ERROR: you must run Mycroft in a venv"
+  fi
   exit 1
 fi
 
@@ -29,6 +30,11 @@ if [ "$rc" != 0 ]; then
   echo "WARNING $cmd returned $rc - proceeding without tmpfs log directory"
 fi
 
-# start Mycroft
+# if no args passed, start Mycroft with "all"
+if [ $# = 0 ]; then
+  arg1=all
+else
+  arg1=$1
+fi
 $ovosStartScript $arg1
 

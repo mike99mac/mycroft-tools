@@ -64,20 +64,24 @@ function installCoreqs
   if [ ! -f /etc/systemd/system/var-log.mount ]; then
     echo "copying var-log.mount ..."
     runCmd sudo cp ~/mycroft-tools/var-log.mount /etc/systemd/system
-    echo "setting service to start at boot ..."
-    runCmd sudo systemctl enable var-log.mount
+    # this causes a systemd "ordering cycle"
+    # echo "setting service to start at boot ..."
+    # runCmd sudo systemctl enable var-log.mount
   fi
-  local logDir="/home/$USER/.local/state/mycroft.mount"
+  local logDir="/home/$USER/.local/state"
   local mountFile="/etc/systemd/system/home-$USER-.local-state-mycroft.mount"
   if [ ! -d $logDir ]; then                # log dir not found
     echo "making mycroft log directory ..."
     runCmd mkdir -p $logDir 
   fi
   if [ ! -f $mountFile ]; then
-    echo "copying mycroft-log.mount and modifying USER ..."
-    runCmd sudo cat ~/mycroft-tools/mycroft-log.mount | sed "s/USER/$USER/g" > $mycroftFile
-    echo "setting service to start at boot ..."
-    runCmd sudo systemctl enable $mycroftFile
+    echo "copying mycroft-log.mount USER ..."
+    runCmd sudo cp ~/mycroft-tools/mycroft-log.mount $mountFile
+    echo "copying mycroft-log.mount USER ..."
+    runCmd sudo sed -i -e "s/USER/$USER/g" $mountFile
+    # this causes a systemd "ordering cycle"
+    # echo "setting service to start at boot ..."
+    # runCmd sudo systemctl enable $mountFile
   fi
   
   # start pulseaudio as a service
