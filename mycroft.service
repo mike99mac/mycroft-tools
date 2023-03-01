@@ -5,8 +5,8 @@ After=pulseaudio.service
 [Service]
 User=pi
 WorkingDirectory=/home/pi/
-ExecStart=/usr/local/sbin/start-mycroft all
-ExecStop=/usr/local/sbin/stop-mycroft
+ExecStart=/usr/local/sbin/start-mycroft.sh all
+ExecStop=/usr/local/sbin/stop-mycroft.sh
 Type=forking
 Restart=no
 Environment="XDG_RUNTIME_DIR=/run/user/1000"
