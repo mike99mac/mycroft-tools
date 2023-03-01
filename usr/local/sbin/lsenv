@@ -176,9 +176,8 @@ function doList()
   : STACK:  ${FUNCNAME[@]}
 
   clear                                    # clear the screen
-  echo $dashes 
   listService mycroft
-  listService buttons
+# listService buttons
   listService mpd 
   listService pulseaudio 
 # listService pipewire 

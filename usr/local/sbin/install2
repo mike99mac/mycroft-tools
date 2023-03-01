@@ -40,8 +40,11 @@ function installOVOS
   export CVXOPT_SUITESPARSE_SRC_DIR=~/ovos-core/SuiteSparse
   echo "CVXOPT_SUITESPARSE_SRC_DIR = $CVXOPT_SUITESPARSE_SRC_DIR"
 
+  echo "installing wheel with pip install ..."
+  runCmd pip install wheel                 # wheel needs to be in place before the next big set
+
   echo "installing packages with pip install ..."
-  runCmd pip install silero adapt wheel tornado ovos-plugin-vlc ovos-test-ocp-audio-plugin ovos-ocp-news-plugin ovos-vad-plugin-webrtcvad ovos-stt-plugin-vosk ovos-stt-plugin-chromium
+  runCmd pip install silero adapt tornado ovos-plugin-vlc ovos-test-ocp-audio-plugin ovos-ocp-news-plugin ovos-vad-plugin-webrtcvad ovos-stt-plugin-vosk ovos-stt-plugin-chromium
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
@@ -51,8 +54,14 @@ function installOVOS
   echo "installing weather skill ..."
   pip install git+https://github.com/OpenVoiceOS/skill-ovos-weather.git
 
-  echo "making symlink to stop-mycroft.sh ..."
-  runCmd ln -s ~/ovos-core/stop-mycroft.sh /usr/local/sbin
+  if [ ! -f /etc/systemd/system/mycroft.service ]; then
+    echo "copying mycroft.service to /etc/systemd/system ..."
+    runCmd sudo cp ~/mycroft-tools/mycroft.service /etc/systemd/system
+  fi
+  if [ ! -f ~/ovos-core/stop-mycroft.sh ]; then
+    echo "making symlink to stop-mycroft.sh ..."
+    runCmd ln -s ~/ovos-core/stop-mycroft.sh /usr/local/sbin
+  fi
  }                                         # installOVOS()
 
 # main()
