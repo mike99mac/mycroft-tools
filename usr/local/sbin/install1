@@ -114,6 +114,8 @@ function installCoreqs
   fi
   echo "copying sample mpd.conf file to /etc"
   runCmd sudo cp ~/mycroft-tools/mpd.conf /etc # copy sample 
+  echo "changing permissons of /etc/mpd.conf"
+  runCmd sudo chmod 644 /etc/mpd.conf  
   if [ ! -d /var/log/mpd ]; then
     echo "making directory /var/log/mpd ..."
     runCmd sudo mkdir /var/log/mpd 
