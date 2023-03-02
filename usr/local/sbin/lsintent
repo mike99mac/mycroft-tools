@@ -113,32 +113,21 @@ function listIntent()
 
 #+--------------------------------------------------------------------------+
 function listSkills()
-# List skills in a short or long format 
-# Args: 
+# List skills 
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  echo "Searching $skillsType skills ..."
-  if [ ${#pattern} != 0 ]; then            # search pattern passed in 
-    output=`mycroft-msm list 2>/dev/null | grep $pattern`
-    if [ ${#output} = 0 ]; then            # skill not found
-      output="No skills found matching: $pattern"
-    fi   
-  elif [ "$skillsType" = all ]; then       # show all skills
-    output=`mycroft-msm list 2>/dev/null`
-  elif [ "$skillsType" = installed ]; then # show just skills installed
-    output=`mycroft-msm list 2>/dev/null | grep installed`
-  else                                     # assume 'unistalled'
-    output=`mycroft-msm list 2>/dev/null | grep -v installed`
-  fi
+  local pythonVer=`python3 -V | awk '{print $2}' | awk -F. '{print $1 "." $2}'`
+  local skillsDir="$VIRTUAL_ENV/lib/python$pythonVer/site-packages"
+  echo "$skillsType skills:"
+  ls -ld $skillsDir/skill_ovos*$pattern* 2>/dev/null | awk -F/ '{print $NF}' 
  }                                         # listSkills()
 
 #+--------------------------------------------------------------------------+
 function listVocab()
-# List vocabulary in a short or long format 
-# Args: 
+# List vocabulary 
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}

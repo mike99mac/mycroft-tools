@@ -3,6 +3,29 @@
 # install2 - clone ovos-core, create a venv and configure it to run OVOS
 #
 #+--------------------------------------------------------------------------+
+function installBasicSkills
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo "installing the date-time skill ..."
+  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-date-time.git
+
+  echo "installing the weather skill ..."
+  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-weather.git
+
+  echo "installing the wikipedia skill ..."
+  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-wikipedia
+
+  echo "installing the news skill ..."
+  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-news
+
+  echo "installing the timer skill ..."
+  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-timer
+ }                                         # installBasicSkills()
+
+#+--------------------------------------------------------------------------+
 function installOVOS
 # Do the work to install ovos-core into a venv 
 #+--------------------------------------------------------------------------+
@@ -34,31 +57,24 @@ function installOVOS
   echo "installing packages with apt-get ..."
   runCmd sudo apt-get install -y build-essential python3-dev swig libssl-dev libfann-dev libpulse-dev libasound2-dev mpg123 portaudio19-dev python3-pyaudio liblapack-dev libopenblas-dev flac
   
-# echo "download SuiteSparse code and exporting CVXOPT_SUITESPARSE_SRC_DIR ..." 
-# runCmd wget https://people.engr.tamu.edu/davis/SuiteSparse/SuiteSparse-5.4.0.tar.gz
-# runCmd tar xf SuiteSparse-5.4.0.tar.gz
-# export CVXOPT_SUITESPARSE_SRC_DIR=~/ovos-core/SuiteSparse
-# echo "CVXOPT_SUITESPARSE_SRC_DIR = $CVXOPT_SUITESPARSE_SRC_DIR"
-
   echo "installing wheel with pip install ..."
   runCmd pip install wheel                 # wheel needs to be in place before the next big set
 
-  echo "installing packages with pip install ..."
+  echo "installing many packages with pip install ..."
   runCmd pip install silero tornado ovos-plugin-vlc ovos-ocp-news-plugin ovos-vad-plugin-webrtcvad ovos-stt-plugin-vosk ovos-stt-plugin-chromium
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
 
-  echo "installing date-time skill ..."
-  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-date-time.git
-  echo "installing weather skill ..."
-  pip install git+https://github.com/OpenVoiceOS/skill-ovos-weather.git
+  installBasicSkills
 
   if [ ! -f /etc/systemd/system/mycroft.service ]; then
     echo "copying mycroft.service to /etc/systemd/system ..."
     runCmd sudo cp ~/mycroft-tools/mycroft.service /etc/systemd/system
   fi
-  if [ ! -f ~/ovos-core/stop-mycroft.sh ]; then
+  echo "setting mycroft to start at boot time ..."
+  runCmd sudo systemctl enable mycroft
+  if [ ! -f /usr/local/sbin/stop-mycroft.sh ]; then
     echo "making symlink to stop-mycroft.sh ..."
     runCmd ln -s ~/ovos-core/stop-mycroft.sh /usr/local/sbin
   fi
