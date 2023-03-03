@@ -1,1 +1,93 @@
-lsintent
+#!/bin/bash
+#
+# lsskills - list skills installed or uninstalled (symlink to lsintent)   
+#
+#+--------------------------------------------------------------------------+
+function usage()
+# Give help to the user
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo "Name: lsskills - List Mycroft ${object}s "
+  echo "Usage: lsskills [OPTIONS] [PATTERN]"
+  echo "Where: PATTERN is an optional string pattern to search for"
+  echo ""
+  echo "OPTIONS:"
+  echo "  -h|--help         Give help (this screen)"
+  echo "  -a|--all          List both installed and uninstalled skills" 
+  echo "  -l|--long         Long listing of $object" 
+  echo "  -u|--uninstalled  Only list skills not installed" 
+  echo "  -x|--debug        Print commands and arguments as they are executed"
+  exit 51
+ }                                         # usage()
+
+#+--------------------------------------------------------------------------+
+function parseArgs()
+# Parse arguments
+# Args: All arguments passed into script
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  while [ -n "$1" ]                        # loop through args passed in
+  do
+    case "$1" in
+      -h|--help)
+        usage
+        ;;
+      -a|--all)                            # valid for lsskills
+        skillsType="all"
+        ;;
+      -l|--long)
+         outputType=long 
+         ;;
+      -u|--uninstalled)                    # valid for lsskills
+        skillsType="uninstalled"
+        ;;
+      -x|--debug)                          # turn trace on
+         set -vx
+         ;;
+      *)
+	if [ ${#pattern} != 0 ]; then      # PATTERN already passed
+	  echo "ERROR: Too many arguments: $1"
+	  exit 4 
+        else
+          pattern=$1
+	  skillsType="certain"
+	fi   
+        ;;
+    esac
+    shift
+  done
+ }                                         # parseArgs()
+
+#+--------------------------------------------------------------------------+
+function listSkills()
+# List skills 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  local pythonVer=`python3 -V | awk '{print $2}' | awk -F. '{print $1 "." $2}'`
+  local skillsDir="$VIRTUAL_ENV/lib/python$pythonVer/site-packages"
+  echo "$skillsType skills instlled in $skillsDir:"
+  ls -ld $skillsDir/skill_ovos*$pattern* 2>/dev/null | awk -F/ '{print $NF}' 
+ }                                         # listSkills()
+
+#+--------------------------------------------------------------------------+
+# Global variables"
+lang="en-us"                                # language
+object=""                                   # object type to be listed 
+output=""                                   # the output string 
+outputType="short"                          # 'short' or 'long' listing
+pattern=""                                  # optional search pattern
+skillsType="installed"                      # show skills 'installed', 'uninstalled', or 'all'
+
+# main()
+parseArgs $@ 
+listSkills 
+
