@@ -9,20 +9,13 @@ function installBasicSkills
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  echo "installing the date-time skill ..."
-  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-date-time.git
-
-  echo "installing the weather skill ..."
-  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-weather.git
-
-  echo "installing the wikipedia skill ..."
-  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-wikipedia
-
-  echo "installing the news skill ..."
-  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-news
-
-  echo "installing the timer skill ..."
-  runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-timer
+  echo "Installing skills in ~/mycroft-tools/skills.txt"
+  local skillURLs=`cat ~/mycroft-tools/skills.txt`
+  local nextSkill
+  for nextSkill in $skillURLs; do
+    echo "installing $nextSkill..."
+    runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-date-time.git
+  done
  }                                         # installBasicSkills()
 
 #+--------------------------------------------------------------------------+
@@ -58,15 +51,17 @@ function installOVOS
   runCmd sudo apt-get install -y build-essential python3-dev swig libssl-dev libfann-dev libpulse-dev libasound2-dev mpg123 portaudio19-dev python3-pyaudio liblapack-dev libopenblas-dev flac
   
   echo "installing wheel with pip install ..."
-  runCmd pip install wheel                 # wheel needs to be in place before the next big set
+  runCmd pip install wheel                 # wheel needs to be in place before other packages 
 
-  echo "installing many packages with pip install ..."
-  runCmd pip install silero tornado ovos-plugin-vlc ovos-ocp-news-plugin ovos-vad-plugin-webrtcvad ovos-stt-plugin-vosk ovos-stt-plugin-chromium
+  echo "installing other non-ovos packages with pip install ..."
+  runCmd pip install silero tornado     
+
+  echo "installing ovos packages with pip install ..."
+  runCmd pip install ovos-cli-client ovos-plugin-vlc ovos-ocp-news-plugin ovos-stt-plugin-vosk ovos-stt-plugin-chromium ovos-vad-plugin-webrtcvad 
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
 
-  installBasicSkills
 
   if [ ! -f /etc/systemd/system/mycroft.service ]; then
     echo "copying mycroft.service to /etc/systemd/system ..."
@@ -84,6 +79,8 @@ function installOVOS
 source installcommon                       # include common functions
 SECONDS=0                                  # reset stopwatch
 
+installBasicSkills
+exit
 installOVOS                                # do the work
 
 let min=$SECONDS/60
