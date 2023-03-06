@@ -46,9 +46,13 @@ function startMycroft
   
   # verify that we are in a venv
   if [ ${#VIRTUAL_ENV} = 0 ]; then           # not in a venv
-    echo "ERROR: you must run Mycroft in a venv"
-    exit 1
-  fi
+    if [ ! -f /home/$USER/ovos-core/venv/bin/activate ]; then
+      echo "ERROR: Mycroft must be run in a venv"
+      exit 1
+    else
+      source /home/$USER/ovos-core/venv/bin/activate # start the venv
+    fi
+  fi  
   
   # make log files directories tmpfs's to lengthen the life of the micro-SD card
   mountFStmpfs var-log.mount /var/log

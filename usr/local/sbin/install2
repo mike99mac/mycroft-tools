@@ -80,7 +80,6 @@ source installcommon                       # include common functions
 SECONDS=0                                  # reset stopwatch
 
 installBasicSkills
-exit
 installOVOS                                # do the work
 
 let min=$SECONDS/60
