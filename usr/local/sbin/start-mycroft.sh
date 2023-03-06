@@ -55,8 +55,12 @@ function startMycroft
   fi  
   
   # make log files directories tmpfs's to lengthen the life of the micro-SD card
-  mountFStmpfs var-log.mount /var/log
   mountFStmpfs home-$USER-.local-state-mycroft.mount Mycroft log directory
+  mountFStmpfs var-log.mount /var/log
+  if [ ! -d /var/log/mpd ]; then 
+    sudo mkdir /var/log/mpd
+    sudo touch /var/log/mpd/mpd.log
+  fi
   
   # if no args passed, start Mycroft with "all"
   if [ $# = 0 ]; then
