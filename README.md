@@ -1,5 +1,6 @@
 # mycroft-tools
 Line commands to be used with Mycroft running on Linux
+*NOTE:* These tools are in the process of being adapted from mycroft-core to ovos-core, as it seems Mycroft will be no more :((
 ```
   * bash_profile                    Can be copied to ~ as .bash_profile to add shortcuts
   * buttons.service                 Systemd file to start buttons as a daemon 
