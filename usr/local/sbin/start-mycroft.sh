@@ -62,26 +62,23 @@ function help() {
     echo "usage: ${script} [COMMAND] [restart] [params]"
     echo
     echo "Services COMMANDs:"
-    echo "  all                      runs core services: bus, audio, skills, voice"
-    echo "  debug                    runs core services, then starts the CLI"
-    echo "  audio                    the audio playback service"
-    echo "  bus                      the messagebus service"
-    echo "  skills                   the skill service"
-    echo "  voice                    voice capture service"
-    echo "  gui                      gui protocol service"
-    echo "  enclosure                mark_1 enclosure service"
+    echo "  all                      Runs core services: bus, audio, skills, voice"
+    echo "  debug                    Runs core services, then starts the CLI"
+    echo "  audio                    Audio playback service"
+    echo "  bus                      Messagebus service"
+    echo "  skills                   Skill service"
+    echo "  voice                    Voice capture service"
+    echo "  gui                      GUI protocol service"
+    echo "  enclosure                Enclosure service"
     echo
-    echo "Tool COMMANDs:"
-    echo "  cli                      the Command Line Interface"
-
     echo "Options:"
-    echo "  restart                  (optional) Force the service to restart if running"
+    echo "  cli                      Command Line Interface"
+    echo "  restart                  Restart service if running"
     echo
     echo "Examples:"
     echo "  ${script} all"
     echo "  ${script} all restart"
     echo "  ${script} cli"
-
     exit 1
 }
 
