@@ -2,6 +2,7 @@ https://github.com/NeonGeckoCom/skill-about
 https://github.com/NeonGeckoCom/skill-alerts
 https://github.com/NeonGeckoCom/skill-speed_test
 https://github.com/OpenVoiceOS/ovos-config
+https://github.com/OpenVoiceOS/ovos_skill_manager
 https://github.com/OpenVoiceOS/skill-ovos-date-time
 https://github.com/OpenVoiceOS/skill-ovos-fallback-unknown
 https://github.com/OpenVoiceOS/skill-ovos-hello-world
@@ -13,4 +14,5 @@ https://github.com/OpenVoiceOS/skill-ovos-timer
 https://github.com/OpenVoiceOS/skill-ovos-volume
 https://github.com/OpenVoiceOS/skill-ovos-weather
 https://github.com/OpenVoiceOS/skill-ovos-wikipedia
+https://github.com/OpenVoiceOS/skill-ovos-youtube-music
 https://github.com/mike99mac/ovos-skill-mpc-mike99mac
