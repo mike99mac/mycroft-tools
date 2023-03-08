@@ -9,12 +9,14 @@ function installBasicSkills
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  echo "Installing skills in ~/mycroft-tools/skills.txt"
+  local date=`date`
+  echo "Running install2.installBasicSkills() on $date ..." 
+  echo 
   local skillURLs=`cat ~/mycroft-tools/skills.txt`
   local nextSkill
   for nextSkill in $skillURLs; do
-    echo "installing $nextSkill..."
-    runCmd pip install git+https://github.com/OpenVoiceOS/skill-ovos-date-time.git
+    echo "installing skill $nextSkill..."
+    runCmd pip install git+$nextSkill
   done
  }                                         # installBasicSkills()
 
@@ -26,6 +28,9 @@ function installOVOS
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
+  local date=`date`
+  echo "Running install2.installOVOS() on $date ..." 
+  echo 
   if [ -d ~/ovos-core ]; then              # ovos-core directory exists
     echo -n "~/ovos-core directory exists - do you want to remove it and re-clone? (y/n) "
     read ans
@@ -62,11 +67,11 @@ function installOVOS
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
 
+
   if [ ! -f /etc/systemd/system/mycroft.service ]; then
     echo "copying mycroft.service to /etc/systemd/system ..."
     runCmd sudo cp ~/mycroft-tools/mycroft.service /etc/systemd/system
   fi
-
   echo "setting mycroft to start at boot time ..."
   runCmd sudo systemctl enable mycroft
   if [ ! -f /usr/local/sbin/stop-mycroft.sh ]; then
@@ -77,10 +82,11 @@ function installOVOS
 
 # main()
 source installcommon                       # include common functions
-SECONDS=0                                  # reset stopwatch
 
-installBasicSkills
+
+SECONDS=0                                  # reset stopwatch
 installOVOS                                # do the work
+installBasicSkills
 
 let min=$SECONDS/60
 let sec=$SECONDS%60
