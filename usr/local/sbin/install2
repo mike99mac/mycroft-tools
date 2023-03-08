@@ -62,11 +62,11 @@ function installOVOS
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
 
-
   if [ ! -f /etc/systemd/system/mycroft.service ]; then
     echo "copying mycroft.service to /etc/systemd/system ..."
     runCmd sudo cp ~/mycroft-tools/mycroft.service /etc/systemd/system
   fi
+
   echo "setting mycroft to start at boot time ..."
   runCmd sudo systemctl enable mycroft
   if [ ! -f /usr/local/sbin/stop-mycroft.sh ]; then
