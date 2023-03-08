@@ -12,11 +12,11 @@ function installCoreqs
   : STACK:  ${FUNCNAME[@]}
 
   echo "installing co-req packages ..."
-  runCmd sudo apt-get install -y vim git mlocate net-tools python3 python3-pip python3-rpi.gpio python3.10-venv mpc mpd
+  runCmd sudo apt-get install -y mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3.10-venv
   
   echo "setting vim to better colors ..."
   grep "colorscheme desert" /etc/vim/vimrc >/dev/null 2>&1
-  if [ $? != 0 ]; then                     # it has not already been added
+  if [ $? != 0 ]; then                     # has not been added
     sudo sed -i -e 's/syntax on/syntax on\n  colorscheme desert/g' /etc/vim/vimrc
   fi  
   echo
@@ -25,6 +25,7 @@ function installCoreqs
   runCmd sudo usermod -a -G video,pulse,pulse-access,dialout,kmem pi
   echo "adding groups to user mpd ..."
   runCmd sudo usermod -a -G pulse-access,pi mpd
+  echo
   
   # copy a .bash_profile from mycroft-tools
   echo "copying .bash_profile ..."
@@ -133,8 +134,11 @@ function installCoreqs
 
 # main()
 source installcommon                       # include common functions
-SECONDS=0                                  # reset stopwatch
 
+date=`date`
+echo "Running install1 on $date ..."
+
+SECONDS=0                                  # reset stopwatch
 installCoreqs                              # do the work
 
 let min=$SECONDS/60
