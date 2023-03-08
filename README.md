@@ -12,8 +12,6 @@ Line commands to be used with Mycroft running on Linux
   * usr/local/sbin/install1         Script to customize a fresh flash of Ubuntu desktop
   * usr/local/sbin/install2         Script to install ovos-core
   * usr/local/sbin/lsenv            List the Mycroft environment - what services are running?
-  * usr/local/sbin/lspairing        List the Mycroft pairing code to pair a new device with mycroft.ai
-  * usr/local/sbin/lsskill          List intent, etc files of one Mycroft skills
   * usr/local/sbin/lsskills         List Mycroft skills installed or not installed
   * usr/local/sbin/lstemp           Report the temperature of the Raspberry Pi
   * usr/local/sbin/setup.sh         Install executable files into /usr/local/sbin  
