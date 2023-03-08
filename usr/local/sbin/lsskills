@@ -19,6 +19,7 @@ function usage()
   echo "  -a|--all          List both installed and uninstalled skills" 
   echo "  -l|--long         Long listing of $object" 
   echo "  -u|--uninstalled  Only list skills not installed" 
+  echo "  -v|--verbose      Verbose output"
   echo "  -x|--debug        Print commands and arguments as they are executed"
   exit 51
  }                                         # usage()
@@ -47,6 +48,9 @@ function parseArgs()
       -u|--uninstalled)                    # valid for lsskills
         skillsType="uninstalled"
         ;;
+      -v|--verbose) 
+        verbose=2 
+        ;;
       -x|--debug)                          # turn trace on
          set -vx
          ;;
@@ -56,13 +60,26 @@ function parseArgs()
 	  exit 4 
         else
           pattern=$1
-	  skillsType="certain"
+	  skillsType="installed"
 	fi   
         ;;
     esac
     shift
   done
  }                                         # parseArgs()
+
+#+--------------------------------------------------------------------------+
+function verboseMsg()
+# Print a message when in verbose mode
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  if [ "$verbose" -gt 1 ]; then            # in verbose mode
+   echo "$@"
+  fi
+ }                                         # verboseMsg()
 
 #+--------------------------------------------------------------------------+
 function listSkills()
@@ -73,9 +90,34 @@ function listSkills()
   : STACK:  ${FUNCNAME[@]}
 
   local pythonVer=`python3 -V | awk '{print $2}' | awk -F. '{print $1 "." $2}'`
-  local skillsDir="$VIRTUAL_ENV/lib/python$pythonVer/site-packages"
-  echo "$skillsType skills instlled in $skillsDir:"
-  ls -ld $skillsDir/skill_ovos*$pattern* 2>/dev/null | awk -F/ '{print $NF}' 
+  local skillsDir="/home/$USER/ovos-core/venv/lib/python$pythonVer/site-packages"
+
+  verboseMsg "$skillsType skills installed in $skillsDir:"
+  local cmd="ls -ld $skillsDir/skill_ovos*$pattern* $skillsDir/ovos_skill*$pattern*"
+  if [ "$outputType" = short ]; then 
+    eval $cmd | grep -v dist-info | awk -F/ '{print $NF}' 
+  else
+    local MDfile
+    local nextSkillDir
+    local skillsDirs
+    skillsDirs=`eval $cmd | grep -v dist-info | awk '{print $9}' | xargs` 
+    for nextSkillDir in $skillsDirs; do 
+      verboseMsg "checking for file: ${nextSkillDir}-*.dist-info/METADATA"
+      if [ -f ${nextSkillDir}/README.md ]; then # README file not found
+        MDfile="${nextSkillDir}/README.md"
+      elif [ -f ${nextSkillDir}-*.dist-info/METADATA ]; then # METADATA file not found
+        MDfile="${nextSkillDir}-*.dist-info/METADATA"
+      else                                 # no markdown file found
+        echo "WARNING: could not find metadata in $nextSkillDir"
+        return
+      fi
+      if [ -x /usr/bin/pandoc ]; then      # format the markdown
+        pandoc -t plain $MDfile
+      else
+        cat $MDfile
+      fi 
+    done
+  fi
  }                                         # listSkills()
 
 #+--------------------------------------------------------------------------+
@@ -86,6 +128,7 @@ output=""                                   # the output string
 outputType="short"                          # 'short' or 'long' listing
 pattern=""                                  # optional search pattern
 skillsType="installed"                      # show skills 'installed', 'uninstalled', or 'all'
+verbose="1"                                 # verbosity level
 
 # main()
 parseArgs $@ 
