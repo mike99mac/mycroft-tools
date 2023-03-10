@@ -93,7 +93,7 @@ function listSkills()
   local skillsDir="/home/$USER/ovos-core/venv/lib/python$pythonVer/site-packages"
 
   verboseMsg "$skillsType skills installed in $skillsDir:"
-  local cmd="ls -ld $skillsDir/skill_ovos*$pattern* $skillsDir/ovos_skill*$pattern*"
+  local cmd="ls -ld $skillsDir/skill_ovos*$pattern* $skillsDir/ovos_skill*$pattern* 2>/dev/null"
   if [ "$outputType" = short ]; then 
     eval $cmd | grep -v dist-info | awk -F/ '{print $NF}' 
   else
@@ -102,7 +102,6 @@ function listSkills()
     local skillsDirs
     skillsDirs=`eval $cmd | grep -v dist-info | awk '{print $9}' | xargs` 
     for nextSkillDir in $skillsDirs; do 
-      verboseMsg "checking for file: ${nextSkillDir}-*.dist-info/METADATA"
       if [ -f ${nextSkillDir}/README.md ]; then # README file not found
         MDfile="${nextSkillDir}/README.md"
       elif [ -f ${nextSkillDir}-*.dist-info/METADATA ]; then # METADATA file not found
@@ -111,6 +110,7 @@ function listSkills()
         echo "WARNING: could not find metadata in $nextSkillDir"
         return
       fi
+      echo "Skill in directory $nextSkillDir"
       if [ -x /usr/bin/pandoc ]; then      # format the markdown
         pandoc -t plain $MDfile
       else
