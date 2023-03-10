@@ -48,7 +48,6 @@ function mountLogDirs
     sudo touch /var/log/mpd/mpd.log
   fi
  } 
-  
 
 SOURCE="${BASH_SOURCE[0]}"
 script=${0}
@@ -100,18 +99,8 @@ function name-to-script-path() {
 
 function launch-process() {
     name-to-script-path ${1}
-    # Launch process in foreground
-    echo "Starting $1"
+    echo "Starting $1"                     # Launch process in foreground
     python3 -m ${_module} $_params
-}
-
-function require-process() {
-    # Launch process if not found
-    name-to-script-path ${1}
-    if ! pgrep -f "python3 (.*)-m ${_module}" > /dev/null ; then
-        # Start required process
-        launch-background ${1}
-    fi
 }
 
 function launch-background() {
@@ -121,20 +110,17 @@ function launch-background() {
         if ($_force_restart) ; then
             echo "Restarting: ${1}"
             "${DIR}/stop-mycroft.sh" ${1}
-        else
-            # Already running, no need to restart
+        else                               # Already running, no need to restart
             return
         fi
     else
         echo "Starting background service $1"
     fi
-
-    # Launch process in background
-    python3 -m ${_module} $_params &
+    python3 -m ${_module} $_params &       # Launch process in background
 }
 
 function launch-all() {
-    echo "Starting all mycroft-core services"
+    echo "Starting all mycroft services from ovos-core"
     launch-background bus
     launch-background skills
     launch-background audio
@@ -143,11 +129,16 @@ function launch-all() {
 }
 
 # main()
-# verify that we are in a venv
+# if we are not in a venv, try to run in one
 if [ ${#VIRTUAL_ENV} = 0 ]; then           # not in a venv
-  echo "ERROR: Mycroft must be run in a venv"
-  exit 1
-fi  
+  VIRTUAL_ENV="/home/$USER/ovos-core/venv"
+  if [ ! -f $VIRTUAL_ENV/bin/activate ]; then
+    echo "ERROR: $VIRTUAL_ENV/bin/activate not found"
+    exit 1
+  fi
+  source $VIRTUAL_ENV/bin/activate
+  echo "started a venv ..."
+fi
   
 mountLogDirs $@                             # mount tmpfs's over log mount tmpfs's over log directories
   
@@ -172,8 +163,8 @@ case ${_opt} in
         launch-process cli
         ;;
     debug)
-      # launch-all; launch-process cli
-        launch-all; ovos-cli-client
+        launch-all; launch-process cli
+      # launch-all; ovos-cli-client
         ;;
     *)
         launch-all
