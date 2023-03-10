@@ -62,7 +62,7 @@ function installOVOS
   runCmd pip install silero tornado     
 
   echo "installing ovos packages with pip install ..."
-  runCmd pip install ovos-cli-client ovos-plugin-vlc ovos-ocp-news-plugin ovos-stt-plugin-vosk ovos-stt-plugin-chromium ovos-vad-plugin-webrtcvad 
+  runCmd pip install ovos-cli-client ovos-ocp-news-plugin ovos-stt-plugin-vosk ovos-stt-plugin-chromium ovos-vad-plugin-webrtcvad 
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
