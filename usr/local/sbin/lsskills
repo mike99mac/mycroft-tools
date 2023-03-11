@@ -17,7 +17,7 @@ function usage()
   echo "OPTIONS:"
   echo "  -h|--help         Give help (this screen)"
   echo "  -a|--all          List both installed and uninstalled skills" 
-  echo "  -l|--long         Long listing of $object" 
+  echo "  -l|--long         Long listing - get details from README or METADATA files"
   echo "  -u|--uninstalled  Only list skills not installed" 
   echo "  -v|--verbose      Verbose output"
   echo "  -x|--debug        Print commands and arguments as they are executed"
@@ -92,10 +92,14 @@ function listSkills()
   local pythonVer=`python3 -V | awk '{print $2}' | awk -F. '{print $1 "." $2}'`
   local skillsDir="/home/$USER/ovos-core/venv/lib/python$pythonVer/site-packages"
 
-  verboseMsg "$skillsType skills installed in $skillsDir:"
+  echo "$skillsType skills installed in $skillsDir:"
   local cmd="ls -ld $skillsDir/skill_ovos*$pattern* $skillsDir/ovos_skill*$pattern* 2>/dev/null"
+  verboseMsg "command: $cmd"
   if [ "$outputType" = short ]; then 
-    eval $cmd | grep -v dist-info | awk -F/ '{print $NF}' 
+    local skillsFound=`eval $cmd | grep -v dist-info | awk -F/ '{print $NF}'`
+    local numSkills=`echo "$skillsFound" | wc -l`
+    verboseMsg "found $numSkills skills:"
+    echo "$skillsFound"
   else
     local MDfile
     local nextSkillDir
