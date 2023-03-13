@@ -163,8 +163,8 @@ case ${_opt} in
         launch-process cli
         ;;
     debug)
-        launch-all; launch-process cli
-      # launch-all; ovos-cli-client
+      # launch-all; launch-process cli
+        launch-all; ovos-cli-client
         ;;
     *)
         launch-all
