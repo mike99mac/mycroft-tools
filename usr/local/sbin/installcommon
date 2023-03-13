@@ -17,6 +17,8 @@ function runCmd
   if [ "$rc" != 0 ]; then                  # it failed
     echo "ERROR: $cmd returned $rc"
     exit 1
+  else
+    echo "command was successful!"
   fi
   echo ""
  }                                         # runCmd()

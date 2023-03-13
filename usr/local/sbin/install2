@@ -3,22 +3,24 @@
 # install2 - clone ovos-core, create a venv and configure it to run OVOS
 #
 #+--------------------------------------------------------------------------+
-function installBasicSkills
+function installPackages
+# install skills and other packages with "pip install git+URL"
+# Args: the URLs to install
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
+  local skillURLs="$@"
   local date=`date`
-  echo "Running install2.installBasicSkills() on $date ..." 
+  echo "Running install2.installPackages() on $date ..." 
   echo 
-  local skillURLs=`cat ~/mycroft-tools/skills.txt`
   local nextSkill
   for nextSkill in $skillURLs; do
     echo "installing skill $nextSkill..."
-    runCmd pip install git+$nextSkill
+    runCmd pip install git+https://github.com/$nextSkill
   done
- }                                         # installBasicSkills()
+ }                                         # installPackages()
 
 #+--------------------------------------------------------------------------+
 function installOVOS
@@ -62,7 +64,14 @@ function installOVOS
   runCmd pip install silero tornado     
 
   echo "installing ovos packages with pip install ..."
-  runCmd pip install ovos-ocp-news-plugin ovos-stt-plugin-vosk ovos-stt-plugin-chromium ovos-vad-plugin-webrtcvad 
+# runCmd pip install ovos-ocp-news-plugin ovos-stt-plugin-vosk ovos-stt-plugin-chromium ovos-vad-plugin-webrtcvad 
+  installPackages OpenVoiceOS/ovos-ocp-news-plugin OpenVoiceOS/ovos-stt-plugin-vosk OpenVoiceOS/ovos-stt-plugin-chromium OpenVoiceOS/ovos-vad-plugin-webrtcvad
+# installPackages mike99mac/ovos-skill-mpc-mike99mac NeonGeckoCom/skill-about NeonGeckoCom/skill-alerts NeonGeckoCom/skill-speed_test OpenVoiceOS/ovos-cli-client 
+  installPackages mike99mac/ovos-skill-mpc-mike99mac OpenVoiceOS/ovos-cli-client 
+  installPackages OpenVoiceOS/ovos-config OpenVoiceOS/ovos_skill_manager OpenVoiceOS/skill-ovos-date-time OpenVoiceOS/skill-ovos-fallback-unknown 
+  installPackages OpenVoiceOS/skill-ovos-hello-world OpenVoiceOS/skill-ovos-naptime OpenVoiceOS/skill-ovos-news OpenVoiceOS/skill-ovos-personal 
+  installPackages OpenVoiceOS/skill-ovos-stop OpenVoiceOS/skill-ovos-timer OpenVoiceOS/skill-ovos-volume OpenVoiceOS/skill-ovos-weather 
+  installPackages OpenVoiceOS/skill-ovos-wikipedia OpenVoiceOS/skill-ovos-youtube-music
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
@@ -83,10 +92,8 @@ function installOVOS
 # main()
 source installcommon                       # include common functions
 
-
 SECONDS=0                                  # reset stopwatch
 installOVOS                                # do the work
-installBasicSkills
 
 let min=$SECONDS/60
 let sec=$SECONDS%60
