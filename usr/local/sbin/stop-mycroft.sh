@@ -101,7 +101,7 @@ case ${OPT} in
         end-process enclosure
         end-process gui
         end-process messagebus.service
-        sudo kilall start-mycroft.sh 
+        sudo killall start-mycroft.sh 
         ;;
     "bus")
         end-process messagebus.service
