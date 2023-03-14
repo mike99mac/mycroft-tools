@@ -61,17 +61,15 @@ function installOVOS
   runCmd pip install wheel                 # wheel needs to be in place before other packages 
 
   echo "installing other non-ovos packages with pip install ..."
-  runCmd pip install silero tornado     
+  runCmd pip install silero tornado 
 
   echo "installing ovos packages with pip install ..."
-# runCmd pip install ovos-ocp-news-plugin ovos-stt-plugin-vosk ovos-stt-plugin-chromium ovos-vad-plugin-webrtcvad 
   installPackages OpenVoiceOS/ovos-ocp-news-plugin OpenVoiceOS/ovos-stt-plugin-vosk OpenVoiceOS/ovos-stt-plugin-chromium OpenVoiceOS/ovos-vad-plugin-webrtcvad
-# installPackages mike99mac/ovos-skill-mpc-mike99mac NeonGeckoCom/skill-about NeonGeckoCom/skill-alerts NeonGeckoCom/skill-speed_test OpenVoiceOS/ovos-cli-client 
-  installPackages mike99mac/ovos-skill-mpc-mike99mac OpenVoiceOS/ovos-cli-client 
+  installPackages mike99mac/ovos-skill-mpc-mike99mac OpenVoiceOS/ovos-cli-client OpenVoiceOS/ovos-tts-plugin-mimic OpenVoiceOS/ovos-tts-plugin-mimic2
   installPackages OpenVoiceOS/ovos-config OpenVoiceOS/ovos_skill_manager OpenVoiceOS/skill-ovos-date-time OpenVoiceOS/skill-ovos-fallback-unknown 
   installPackages OpenVoiceOS/skill-ovos-hello-world OpenVoiceOS/skill-ovos-naptime OpenVoiceOS/skill-ovos-news OpenVoiceOS/skill-ovos-personal 
   installPackages OpenVoiceOS/skill-ovos-stop OpenVoiceOS/skill-ovos-timer OpenVoiceOS/skill-ovos-volume OpenVoiceOS/skill-ovos-weather 
-  installPackages OpenVoiceOS/skill-ovos-wikipedia OpenVoiceOS/skill-ovos-youtube-music
+  installPackages OpenVoiceOS/skill-ovos-wikipedia OpenVoiceOS/skill-ovos-youtube-music MycroftAI/adapt
 
   echo "installing stable version of ovos-core ..."
   runCmd "pip install ovos-core[all]"
