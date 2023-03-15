@@ -60,6 +60,7 @@ function listService()
   : STACK:  ${FUNCNAME[@]}
 
   local theService=$1
+  local procs
 
   echo "Status of $theService:"
   local tempFile=/tmp/fubar
@@ -74,12 +75,21 @@ function listService()
     fi
   else
     echo " -) WARNING: $theService is not running as a service ... checking for processes ..."
-    local procs=`ps -ef | grep $theService | grep -v grep`
+    procs=`ps -ef | grep $theService | grep -v grep`
     if [ ${#procs} != 0 ]; then              # matching process
       echo "    Found matching $theService processes:"
       echo "$procs" | sed 's/^/    /g'
     else
-      echo "    WARNING: no processes matching $theService found"  
+      echo "    WARNING: no processes matching $theService - checking for python processes ..."
+      if [ "$theService" = mycroft ]; then # check for python processes
+        procs=`ps -ef | grep python | grep -v grep | grep -v networkd-dispatcher`
+        if [ ${#procs} != 0 ]; then              # matching process
+          echo "    Found matching python processes:"
+          echo "$procs" | sed 's/^/    /g'
+        else
+          echo "    WARNING: Mycroft does not appear to be running"
+        fi
+      fi  
     fi  
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
