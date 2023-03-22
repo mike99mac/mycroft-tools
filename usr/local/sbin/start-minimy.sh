@@ -3,6 +3,53 @@
 # start-minimy.sh
 # 
 #+--------------------------------------------------------------------------+
+function mountFStmpfs
+# Mount a file system in a tmpfs using systemd .mount files
+# Arg 1    : systemd .mount file to use
+# Args 2-n : description of the file system
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  local mountFile=$1
+  shift
+  local desc="$@"                          # remaining args are desription
+
+  local mountDir=`echo $mountFile | sed 's:-:/:g'`
+  local fsType=`mount | grep $mountDir | awk '{print $5}'`
+  if [ "$fsType" = tmpfs ]; then           # already a tmpfs
+    echo "$mountDir is already a tmpfs"
+    return
+  fi
+  echo "making directory $fileSystem a tmpfs ..."
+  cmd="sudo systemctl start $mountFile"
+  eval $cmd
+  rc=$?
+  if [ "$rc" != 0 ]; then
+    echo "WARNING $cmd returned $rc - proceeding without tmpfs $desc"
+  else
+    echo "$cmd was successful"
+  fi
+ }                                         # mountFStmpfs()
+
+#+--------------------------------------------------------------------------+
+function mountLogDirs
+# make log files directories tmpfs's to prolong the life of the micro-SD card
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  mountFStmpfs home-$USER-minimy-logs.mount Minimy log directory
+  mountFStmpfs var-log.mount /var/log
+  if [ ! -d /var/log/mpd ]; then           # mpd needs a log file to start
+    sudo mkdir /var/log/mpd
+    sudo touch /var/log/mpd/mpd.log
+  fi
+ }
+
+#+--------------------------------------------------------------------------+
 function startSystem 
 # Start Minimy base components 
 #+--------------------------------------------------------------------------+
@@ -22,11 +69,17 @@ function startSystem
   cat install/mmconfig.yml | grep -v "AWS" | grep -v "Goog"
 
   echo 'Start Local STT Server'
-  deactivate
+  which deactivate >/dev/null
+  if [ $? = 0 ]; then
+    deactivate
+  fi
   cd framework/services/stt/local/CoquiSTT
   source venv_coqui/bin/activate
-  python server.py --model-dir ds_model  > coqui_stt.log 2>&1 &
-  deactivate
+  python3 server.py --model-dir ds_model  > coqui_stt.log 2>&1 &
+  which deactivate >/dev/null
+  if [ $? = 0 ]; then
+    deactivate
+  fi
   cd ../../../../..
 
   echo 'Starting Local TTS Server ...'
@@ -34,7 +87,10 @@ function startSystem
   deactivate
   source .venv/bin/activate
   bin/mimic3 --model-dir voices/apope  > mimic3_tts.log 2>&1 &
-  deactivate
+  which deactivate >/dev/null
+  if [ $? = 0 ]; then
+    deactivate
+  fi
 
   cd ../../../../..
   source venv_ngv/bin/activate
@@ -48,24 +104,24 @@ function startSystem
 
   echo 'Starting Message Bus ...'
   cd bus
-  python MsgBus.py &
+  python3 MsgBus.py &
   cd ..
   sleep 2
 
   echo 'Starting System Skill ...'
   cd skills/system_skills
-  python skill_system.py &
+  python3 skill_system.py &
   sleep 1
   cd ../../
 
   echo 'Starting Intent Service ...'
-  python framework/services/intent/intent.py &
+  python3 framework/services/intent/intent.py &
   sleep 2 
 
   echo 'Starting Media Service ...'
-  python framework/services/output/media_player.py &
-  python framework/services/tts/tts.py &
-  python framework/services/stt/stt.py &
+  python3 framework/services/output/media_player.py &
+  python3 framework/services/tts/tts.py &
+  python3 framework/services/stt/stt.py &
   sleep 1
  }                                         # startSystem() 
 
@@ -88,8 +144,8 @@ function loadOneSkill
     exit 1
   fi
   cd $theDir
-  echo "Loading $desc"
-  python __init__.py $PWD &
+  echo "Loading $desc ..."
+  python3 __init__.py $PWD &
  }                                         # loadOneSkill{}
 
 #+--------------------------------------------------------------------------+
@@ -103,10 +159,10 @@ function loadSystemSkills
   echo ' '
   echo 'Start System Skills ...'
   cd $baseDir
-  python skills/system_skills/skill_fallback.py &
-  python skills/system_skills/skill_media.py &
-  python skills/system_skills/skill_volume.py &
-  python skills/system_skills/skill_alarm.py &
+  python3 skills/system_skills/skill_fallback.py &
+  python3 skills/system_skills/skill_media.py &
+  python3 skills/system_skills/skill_volume.py &
+  python3 skills/system_skills/skill_alarm.py &
   sleep 2 
  } 
 
@@ -123,7 +179,8 @@ function loadUserSkills
   cd $baseDir/skills/user_skills
 
   loadOneSkill help Help skill
-  loadOneSkill ../rfm RFM skill
+  echo 'WARNING! NOT loading rfm radio skill!'
+  # loadOneSkill ../rfm RFM skill
   echo 'WARNING! NOT loading youtube music skill!'
   # loadOneSkill ../youtube YouTube skill 
   loadOneSkill ../email Email skill
@@ -135,7 +192,7 @@ function loadUserSkills
   echo 'WARNING! NOT loading Home Assistant skill!'
   # loadOneSkill ../ha_skill Home Assistant skill
   loadOneSkill ../connectivity Connectivity skill 
-  loadOneSkill ../mpc mpc/mpd music skill  # try Mike's music skill
+  loadOneSkill ../mpc mpc/mpd music skill  # Mike's music skill
   sleep 3
  }                                         # loadUserSkills()
 
@@ -150,15 +207,18 @@ function loadMic
   echo 'Finally, start the mic'
   cd $baseDir
   source venv_ngv/bin/activate
-  python framework/services/input/mic.py &
+  python3 framework/services/input/mic.py &
+  echo 
  }                                         # loadMic()
 
 # main()
 baseDir="$HOME/minimy"
+export PYTHONPATH="$baseDir:$baseDir/venv_ngv/lib/python3.10/site-packages"
+export SVA_BASE_DIR="$baseDir"
 
+mountLogDirs $@                            # mount tmpfs's over log mount tmpfs's over log directories
 startSystem
 loadSystemSkills 
 loadUserSkills 
 loadMic 
-echo ' '
 echo '** System Started **'
