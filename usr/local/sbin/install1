@@ -43,16 +43,14 @@ function installCoreqs
   
   # vim - please just give me a newline
   echo "removing annoying autoindent from vim ..."
-  cd /usr/share/vim/vim82
-  if [ -f indent.vim ]; then
-    runCmd sudo mv indent.vim indent.vim.dontuse
+  if [ ! -d $HOME/.vim ]; then
+    runCmd mkdir $HOME/.vim 
   fi  
-  if [ ! -d ~/.vim/indent ]; then
-    runCmd mkdir -p ~/.vim/indent
-  fi  
-  if [ ! -f ~/.vim/indent/html.vim ]; then
-    echo "let b:did_indent = 1" > ~/.vim/indent/html.vim
-  fi  
+  cd $HOME/.vim
+  echo "set noautoindent" >> vimrc
+  echo "set nocindent" >> vimrc
+  echo "set nosmartindent" >> vimrc
+  echo "set indentexpr=" >> vimrc
   
   # rsyslog can send a flood of kernel messages
   if [ -f /etc/rsyslog.conf -a ! -f /etc/rsyslog.conf.orig ]; then 

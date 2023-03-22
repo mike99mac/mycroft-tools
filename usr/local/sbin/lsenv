@@ -157,12 +157,16 @@ function listTemp()
 #+--------------------------------------------------------------------------+
 function tmpfsUsage()
 # Is the directory passed in using a tmpfs? 
+# Arg 1   : directory to mount
+# Args 2-n:
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
   local theDir=$1
+  shift
+  local desc="$@"
   local answer
 
   mount | grep $theDir | grep tmpfs >/dev/null 2>&1
@@ -171,10 +175,7 @@ function tmpfsUsage()
   else
     answer=no
   fi
-  if [ "$theDir" = ".local/state/mycroft" ]; then # make more readable
-    theDir="Mycroft logs"
-  fi
-  printf "%15s : %s\n" "$theDir" "$answer"
+  printf "%30s %12s : %s\n" "$theDir" "$desc" "$answer"
  }                                         # getCPU()
 
 #+--------------------------------------------------------------------------+
@@ -190,7 +191,6 @@ function doList()
 # listService buttons
   listService mpd 
   listService pulseaudio 
-# listService pipewire 
   
   # also list many other settings and status 
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
@@ -212,8 +212,9 @@ function doList()
 
   # are log directories using tmpfs? 
   echo "tmpfs filesystem?"
-  tmpfsUsage ".local/state/mycroft"
-  tmpfsUsage /var/log 
+  tmpfsUsage /var/log Linux logs
+  tmpfsUsage $HOME/minimy/logs Minimy logs
+  tmpfsUsage $HOME/.local/state/mycroft OVOS logs
   echo
  }                                         # doList()
 
