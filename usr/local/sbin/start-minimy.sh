@@ -98,9 +98,15 @@ function startSystem
   export PYTHONPATH=`pwd`
   export SVA_BASE_DIR=`pwd`
   export GOOGLE_APPLICATION_CREDENTIALS="/home/pi/minimy/install/my-google-key.json"
-  rm tmp/save_audio/*
-  rm tmp/save_text/*
-  rm tmp/save_tts/*
+  if [ -f tmp/save_audio/* ]; then
+    rm tmp/save_audio/*
+  fi
+  if [ -f tmp/save_text/* ]; then
+    rm tmp/save_text/*
+  fi
+  if [ -f tmp/save_tts/* ]; then
+    rm tmp/save_tts/*
+  fi
 
   echo 'Starting Message Bus ...'
   cd bus

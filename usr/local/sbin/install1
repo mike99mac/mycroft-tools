@@ -43,7 +43,7 @@ function installCoreqs
   
   # vim - please just give me a newline
   echo "removing annoying autoindent from vim ..."
-  if [ ! -d $HOME/.vim ]; then
+  if [ -d $HOME/.vim ]; then
     runCmd mkdir $HOME/.vim 
   fi  
   cd $HOME/.vim

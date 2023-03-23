@@ -57,7 +57,7 @@ function parseArgs()
       *)
 	if [ ${#pattern} != 0 ]; then      # PATTERN already passed
 	  echo "ERROR: Too many arguments: $1"
-	  exit 4 
+	  usage 
         else
           pattern=$1
 	  skillsType="installed"
