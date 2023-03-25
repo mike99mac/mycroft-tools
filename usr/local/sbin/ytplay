@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+# ytplay - play just the the audio of a youtube video 
+# Arg 1:   YouTube URL of the music/video to play
+#
+if [ $# = 0 ]; then 
+  echo "ERROR: no URL passed in"
+  echo "Usage: ytplay YouTube-URL"
+elif [ $# != 1 ]; then 
+  echo "ERROR: too many args" 
+  echo "Usage: ytplay YouTube-URL"
+else
+  which yt-dlp >/dev/null 2>&1
+  if [ $? != 0 ]; then 
+    echo "ERROR: yt-dlp not installed"
+    echo "Try: python3 -m pip install --force-reinstall https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz"
+    exit 1
+  fi
+  which mpv >/dev/null 2>&1
+  if [ $? != 0 ]; then 
+    echo "ERROR: mpv not installed"
+    echo "Try: sudo apt install mpv libmpv-dev python3-mpv"
+    exit 2
+  fi
+  URL=$1
+  mpv_URLs=`yt-dlp -g $URL` 
+  rc=$?
+  if [ "$rc" != 0 ]; then
+    echo "ERROR: yt-dlp -g $URL returned $rc"
+    exit 3
+  fi
+  mpv_URL=`echo "$mpv_URLs" | tail -1` # need only the last URL
+  # opening the socket in /tmp allows for mpv to be stopped and restarted with:
+  #  echo '{ "command": ["set_property", "pause", true] }' | socat - /tmp/mpvsocket
+  #  echo '{ "command": ["set_property", "pause", false] }' | socat - /tmp/mpvsocket
+  mpv --no-video --input-ipc-server=/tmp/mpvsocket "$mpv_URL" 
+fi
