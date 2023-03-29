@@ -32,6 +32,6 @@ $ cd
 $ git clone https://github.com/mike99mac/mycroft-tools
 $ cd mycroft-tools
 $ sudo ./setup.sh
-
+```
 # Feedback
 Feel free to email me at mike99mac at gmail.com
