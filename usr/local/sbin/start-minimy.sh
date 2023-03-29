@@ -60,10 +60,20 @@ function startSystem
   if [ ! -d $baseDir ]; then
     echo "ERROR: base directory $baseDir not found"
     echo "To clone Minimy to your home directory: "
+  # echo "cd; git clone https://github.com/ken-mycroft/minimy-mike99mac"
+  # TODO: change over to my fork 
     echo "cd; git clone https://github.com/ken-mycroft/minimy"
     exit 1
   fi  
 
+  # check if minimy is already running
+  ps -ef | grep "python3.*minimy" | grep -v grep
+  if [ $? = 0 ]; then                      # minimy is running
+    echo "It appears Minimy is already running!"
+    exit 1
+  fi
+
+  # start Minimy
   echo 'System Starting ...'
   cd $baseDir
   cat install/mmconfig.yml | grep -v "AWS" | grep -v "Goog"
@@ -98,13 +108,13 @@ function startSystem
   export PYTHONPATH=`pwd`
   export SVA_BASE_DIR=`pwd`
   export GOOGLE_APPLICATION_CREDENTIALS="/home/pi/minimy/install/my-google-key.json"
-  if [ -f tmp/save_audio/* ]; then
+  if [ -f "tmp/save_audio/*" ]; then
     rm tmp/save_audio/*
   fi
-  if [ -f tmp/save_text/* ]; then
+  if [ -f "tmp/save_text/*" ]; then
     rm tmp/save_text/*
   fi
-  if [ -f tmp/save_tts/* ]; then
+  if [ -f "tmp/save_tts/*" ]; then
     rm tmp/save_tts/*
   fi
 
@@ -170,7 +180,7 @@ function loadSystemSkills
   python3 skills/system_skills/skill_volume.py &
   python3 skills/system_skills/skill_alarm.py &
   sleep 2 
- } 
+ }                                       # loadSystemSkills() 
 
 #+--------------------------------------------------------------------------+
 function loadUserSkills
@@ -185,9 +195,9 @@ function loadUserSkills
   cd $baseDir/skills/user_skills
 
   loadOneSkill help Help skill
-  echo 'WARNING! NOT loading rfm radio skill!'
+  #echo 'WARNING! NOT loading rfm radio skill!'
   # loadOneSkill ../rfm RFM skill
-  echo 'WARNING! NOT loading youtube music skill!'
+  #echo 'WARNING! NOT loading youtube music skill!'
   # loadOneSkill ../youtube YouTube skill 
   loadOneSkill ../email Email skill
   loadOneSkill ../wiki Wiki skill
@@ -195,7 +205,7 @@ function loadUserSkills
   loadOneSkill ../example1 Example 1 skill 
   loadOneSkill ../npr_news NPR News skill 
   loadOneSkill ../weather Weather skill 
-  echo 'WARNING! NOT loading Home Assistant skill!'
+  #echo 'WARNING! NOT loading Home Assistant skill!'
   # loadOneSkill ../ha_skill Home Assistant skill
   loadOneSkill ../connectivity Connectivity skill 
   loadOneSkill ../mpc mpc/mpd music skill  # Mike's music skill
@@ -223,8 +233,10 @@ export PYTHONPATH="$baseDir:$baseDir/venv_ngv/lib/python3.10/site-packages"
 export SVA_BASE_DIR="$baseDir"
 
 mountLogDirs $@                            # mount tmpfs's over log mount tmpfs's over log directories
+/usr/local/sbin/rmlogs                     # remove old log files
 startSystem
 loadSystemSkills 
 loadUserSkills 
 loadMic 
 echo '** System Started **'
+
