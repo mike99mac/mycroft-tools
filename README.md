@@ -25,4 +25,13 @@ Line commands to be used with Mycroft running on Linux
   * usr/local/sbin/testrecord       Record for a short while and save to a file to test your microphone
   * usr/local/sbin/tmpfsmnt         Scripts to mount tmpfs file systems
 ```
+# Installation
+Clone the package then run ``setup.sh`` to copy the scripts to ``/usr/local/sbin``.
+```
+$ cd
+$ git clone https://github.com/mike99mac/mycroft-tools
+$ cd mycroft-tools
+$ sudo ./setup.sh
 
+# Feedback
+Feel free to email me at mike99mac at gmail.com
