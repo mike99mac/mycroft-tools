@@ -34,4 +34,4 @@ $ cd mycroft-tools
 $ sudo ./setup.sh
 ```
 # Feedback
-Feel free to email me at mike99mac at gmail.com
+Any questions or suggestions? Feel free to email me at mike99mac at gmail.com
