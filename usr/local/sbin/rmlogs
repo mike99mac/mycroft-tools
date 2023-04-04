@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# rmlogs - remove Minimy log files 
+#
+echo "Removing log files in /home/pi/minimy/logs..."
+rm /home/pi/minimy/logs/*
+
