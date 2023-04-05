@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# restart - stop and start Minimy 
+#
+/usr/local/sbin/stop-minimy.sh
+echo
+echo "-----------------------------------------------------------------------"
+echo
+/usr/local/sbin/start-minimy.sh
