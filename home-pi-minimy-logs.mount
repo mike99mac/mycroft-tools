@@ -1,4 +1,4 @@
-# systemd unit file that mounts /var/logs as a tmpfs 
+# systemd unit file that mounts /home/pi/minimy/logs as a tmpfs 
 [Unit]
 Description=Mount tmpfs file system over /var/log
 Documentation=man:hier(7)
@@ -11,7 +11,7 @@ After=swap.target
 
 [Mount]
 What=tmpfs
-Where=/var/log
+Where=/home/pi/minimy/logs
 Type=tmpfs
 Options=mode=1777,strictatime,nosuid,nodev
 
