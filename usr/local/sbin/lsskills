@@ -82,16 +82,31 @@ function verboseMsg()
  }                                         # verboseMsg()
 
 #+--------------------------------------------------------------------------+
-function listSkills()
-# List skills 
+function listMinimySkills()
+# List the Minimy skills installed
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  local pythonVer=`python3 -V | awk '{print $2}' | awk -F. '{print $1 "." $2}'`
-  local skillsDir="/home/$USER/ovos-core/venv/lib/python$pythonVer/site-packages"
+  local cmd
 
+  if [ "$outputType" = short ]; then
+    ps -ef | grep user_skills | grep -v grep | awk -F/ '{print $NF}'
+  else
+    ps -ef | grep user_skills 
+  fi
+ }                                         # listMinimySkills()
+
+#+--------------------------------------------------------------------------+
+function listOVOSskills()
+# List the OVOS skills installed 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  skillsDir=$1
   echo "$skillsType skills installed in $skillsDir:"
   local cmd="ls -ld $skillsDir/skill_ovos*$pattern* $skillsDir/ovos_skill*$pattern* 2>/dev/null"
   verboseMsg "command: $cmd"
@@ -121,6 +136,28 @@ function listSkills()
         cat $MDfile
       fi 
     done
+  fi
+ }                                         # listOVOSskills()
+
+#+--------------------------------------------------------------------------+
+function listSkills()
+# List either Minimy or OVOS skills 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  if [ -d $HOME/minimy/skills ]; then                               
+    listMinimySkills 
+  else
+    local pythonVer=`python3 -V | awk '{print $2}' | awk -F. '{print $1 "." $2}'`
+    local OVOSdir="$HOME/ovos-core/venv/lib/python$pythonVer/site-packages" 
+    if [ -d $OVOSdir ]; then
+      listOVOSskills DOVOSdir
+    else
+      echo "Did not find Minimy nor OVOS skills"
+      exit 1
+    fi
   fi
  }                                         # listSkills()
 

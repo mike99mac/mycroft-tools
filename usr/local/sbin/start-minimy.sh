@@ -60,9 +60,7 @@ function startSystem
   if [ ! -d $baseDir ]; then
     echo "ERROR: base directory $baseDir not found"
     echo "To clone Minimy to your home directory: "
-  # echo "cd; git clone https://github.com/ken-mycroft/minimy-mike99mac"
-  # TODO: change over to my fork 
-    echo "cd; git clone https://github.com/ken-mycroft/minimy"
+    echo "cd; git clone https://github.com/mike99mac/minimy-mike99mac" 
     exit 1
   fi  
 
@@ -101,7 +99,6 @@ function startSystem
   if [ $? = 0 ]; then
     deactivate
   fi
-
   cd ../../../../..
   source venv_ngv/bin/activate
 
@@ -203,7 +200,7 @@ function loadUserSkills
   loadOneSkill ../wiki Wiki skill
   loadOneSkill ../timedate TimeDate skill 
   loadOneSkill ../example1 Example 1 skill 
-  loadOneSkill ../npr_news NPR News skill 
+  # loadOneSkill ../npr_news NPR News skill 
   loadOneSkill ../weather Weather skill 
   #echo 'WARNING! NOT loading Home Assistant skill!'
   # loadOneSkill ../ha_skill Home Assistant skill
