@@ -89,16 +89,17 @@ function listService()
       echo "    Found matching $theService processes:"
       echo "$procs" | sed 's/^/    /g'
     else
-      echo "    WARNING: no processes matching $theService - checking for python processes ..."
-      if [ "$theService" = mycroft ]; then # check for python processes
-        procs=`ps -ef | grep python | grep -v grep | grep -v networkd-dispatcher`
-        if [ ${#procs} != 0 ]; then              # matching process
-          echo "    Found matching python processes:"
-          echo "$procs" | sed 's/^/    /g'
-        else
-          echo "    WARNING: Mycroft does not appear to be running"
-        fi
-      fi  
+      echo "    WARNING: no processes matching $theService - does not appear to be running ..."
+#     echo "    WARNING: no processes matching $theService - checking for python processes ..."
+#     if [ "$theService" = mycroft ]; then # check for python processes
+#       procs=`ps -ef | grep python | grep -v grep | grep -v networkd-dispatcher`
+#       if [ ${#procs} != 0 ]; then              # matching process
+#         echo "    Found matching python processes:"
+#         echo "$procs" | sed 's/^/    /g'
+#       else
+#         echo "    WARNING: Mycroft does not appear to be running"
+#       fi
+#     fi
     fi  
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
@@ -184,12 +185,12 @@ function tmpfsUsage()
   else
     answer=no
   fi
-  printf "%30s %12s : %s\n" "$theDir" "$desc" "$answer"
+  printf "%30s %16s : %s\n" "$theDir" "$desc" "$answer"
  }                                         # getCPU()
 
 #+--------------------------------------------------------------------------+
 function doList()
-# List many aspects of the Mycroft environment 
+# List many aspects of the MiniMy environment 
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
@@ -198,7 +199,7 @@ function doList()
   if [ ${#options} = 0 ]; then 
     clear                                  # clear the screen
   fi
-  listService mycroft
+  listService minimy
   listService buttons
   listService mpd 
   listService pulseaudio 
@@ -206,16 +207,13 @@ function doList()
   # also list many other settings and status 
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
   printf "%15s : %s\n" "IP address" "$IPaddr"
-
-  # RasPi temperature
-  listTemp
+  listTemp                                 # RasPi temperature
 
   # root file system usage
   local rootUsed=`df -h / | tail -1 | awk '{print $5}'`
   printf "%15s : %s\n" "Root fs usage" "$rootUsed"
 
-  # CPU usage
-  getCPU  
+  getCPU                                   # CPU usage
 
   # memory usage
   echo "Memory usage    :"
@@ -225,7 +223,8 @@ function doList()
   echo "tmpfs filesystem?"
   tmpfsUsage /var/log Linux logs
   tmpfsUsage $HOME/minimy/logs Minimy logs
-  tmpfsUsage $HOME/.local/state/mycroft OVOS logs
+  tmpfsUsage $HOME/minimy/tmp Minimy temp dir 
+  # tmpfsUsage $HOME/.local/state/mycroft OVOS logs
   echo
  }                                         # doList()
 
