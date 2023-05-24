@@ -12,7 +12,9 @@ function installCoreqs
   : STACK:  ${FUNCNAME[@]}
 
   echo "installing co-req packages ..."
-  runCmd sudo apt-get install -y mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3.10-venv
+  for nextPkg in mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3.10-venv; do
+    runCmd sudo apt-get install -y $nextPkg
+  done  
   
   echo "setting vim to better colors ..."
   grep "colorscheme desert" /etc/vim/vimrc >/dev/null 2>&1
@@ -44,7 +46,7 @@ function installCoreqs
   # vim - please just give me a newline
   echo "removing annoying autoindent from vim ..."
   if [ -d $HOME/.vim ]; then
-    runCmd mkdir $HOME/.vim 
+    runCmd sudo mkdir $HOME/.vim 
   fi  
   cd $HOME/.vim
   echo "set noautoindent" >> vimrc
@@ -128,6 +130,9 @@ function installCoreqs
 
   echo "setting mpd to start at boot time"
   runCmd sudo systemctl enable mpd         # start mpd at boot
+
+  echo "turning off bluetooth ..."
+  runCmd sudo systemctl disable bluetooth 
  }                                         # installCoreqs()
 
 # main()
