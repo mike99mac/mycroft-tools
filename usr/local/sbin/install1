@@ -117,14 +117,16 @@ function installCoreqs
   runCmd sudo cp ~/mycroft-tools/mpd.conf /etc # copy sample 
   echo "changing permissons of /etc/mpd.conf"
   runCmd sudo chmod 644 /etc/mpd.conf  
-  if [ ! -d /var/log/mpd ]; then
-    echo "making directory /var/log/mpd ..."
-    runCmd sudo mkdir /var/log/mpd 
-  fi
-  if [ ! -f /var/log/mpd/mpd.log ]; then
-    echo "creating file /var/log/mpd/mpd.log ..."
-    runCmd sudo touch /var/log/mpd/mpd.log
-  fi
+
+# mpd.log was removed from mpd.conf so this isn't needed
+# if [ ! -d /var/log/mpd ]; then
+#   echo "making directory /var/log/mpd ..."
+#   runCmd sudo mkdir /var/log/mpd
+# fi
+# if [ ! -f /var/log/mpd/mpd.log ]; then
+#   echo "creating file /var/log/mpd/mpd.log ..."
+#   runCmd sudo touch /var/log/mpd/mpd.log
+# fi
   echo "changing ownership of /var/log/mpd ..."
   runCmd sudo chown mpd.audio /var/log/mpd
 
