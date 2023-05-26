@@ -12,7 +12,7 @@ function installCoreqs
   : STACK:  ${FUNCNAME[@]}
 
   echo "installing co-req packages ..."
-  for nextPkg in mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3.10-venv; do
+  for nextPkg in mlocate mpd mpc net-tools pandoc python3 python3-pip python3-rpi.gpio python3.10-venv; do
     runCmd sudo apt-get install -y $nextPkg
   done  
   

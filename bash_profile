@@ -1,6 +1,6 @@
 alias la='ls -latr'
 alias vi=/usr/bin/vim
-alias venv="source $HOME/minimy/venv_ngv/bin/activate"        # start a minimy venv
+alias venv="source $HOME/minimy-mike99mac/venv_ngv/bin/activate" # start a minimy venv
 export INT="/home/pi/minimy/framework/services/intent"
 export LOG="$HOME/minimy/logs"                                # Mycroft/ovos logs
 export MPC="$HOME/minimy/skills/user_skills/mpc"              # mpc/mpd music skill
