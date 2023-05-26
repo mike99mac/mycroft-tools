@@ -27,7 +27,6 @@ function installCoreqs
   runCmd sudo usermod -a -G video,pulse,pulse-access,dialout,kmem pi
   echo "adding groups to user mpd ..."
   runCmd sudo usermod -a -G pulse-access,pi mpd
-  echo
   
   # copy a .bash_profile from mycroft-tools
   echo "copying .bash_profile ..."
@@ -45,8 +44,8 @@ function installCoreqs
   
   # vim - please just give me a newline
   echo "removing annoying autoindent from vim ..."
-  if [ -d $HOME/.vim ]; then
-    runCmd sudo mkdir $HOME/.vim 
+  if [ ! -d $HOME/.vim ]; then
+    runCmd mkdir $HOME/.vim 
   fi  
   cd $HOME/.vim
   echo "set noautoindent" >> vimrc
