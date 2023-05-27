@@ -85,21 +85,17 @@ function listService()
   else
     echo " -) WARNING: $theService is not running as a service ... checking for processes ..."
     procs=`ps -ef | grep $theService | grep -v grep`
-    if [ ${#procs} != 0 ]; then              # matching process
-      echo "    Found matching $theService processes:"
-      echo "$procs" | sed 's/^/    /g'
+    if [ ${#procs} != 0 ]; then            # matching process
+      if [ "$theService" = minimy ]; then  # just show the skills running
+        skills=`echo "$procs" | awk -F/ '{print $NF}'`
+        echo "    Found minimy user skills running:" 
+        echo "$procs" | awk -F/ '{print $NF}'| sed 's/^/      /g'  
+      else 
+        echo "    Found matching $theService processes:"
+        echo "$procs" | sed 's/^/    /g'
+      fi
     else
-      echo "    WARNING: no processes matching $theService - does not appear to be running ..."
-#     echo "    WARNING: no processes matching $theService - checking for python processes ..."
-#     if [ "$theService" = mycroft ]; then # check for python processes
-#       procs=`ps -ef | grep python | grep -v grep | grep -v networkd-dispatcher`
-#       if [ ${#procs} != 0 ]; then              # matching process
-#         echo "    Found matching python processes:"
-#         echo "$procs" | sed 's/^/    /g'
-#       else
-#         echo "    WARNING: Mycroft does not appear to be running"
-#       fi
-#     fi
+      echo "    WARNING: no processes matching $theService - it does not appear to be running ..."
     fi  
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
