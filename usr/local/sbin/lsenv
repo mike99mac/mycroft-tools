@@ -87,11 +87,16 @@ function listService()
     procs=`ps -ef | grep $theService | grep -v grep`
     if [ ${#procs} != 0 ]; then            # matching process
       if [ "$theService" = minimy ]; then  # just show the skills running
-        userSkills=`echo "$procs" | awk -F/ '{print $NF}' | sort | xargs`
-        systemSkills=`ps -ef|grep -E 'python3 framework|python3 skills'|grep -v grep|awk -F/ '{print $NF}'|sed 's/.py//g'|sort|uniq|xargs`
-        echo "    Minimy user skills: $userSkills"
-        echo "         System skills: $systemSkills"
-      else 
+        if [ "$verbose" = 1 ]; then        # normal output
+          userSkills=`echo "$procs" | awk -F/ '{print $NF}' | sort | xargs`
+          systemSkills=`ps -ef|grep -E 'python3 framework|python3 skills'|grep -v grep|awk -F/ '{print $NF}'|sed 's/.py//g'|sort|uniq|xargs`
+          echo "    Minimy user skills: $userSkills"
+          echo "         System skills: $systemSkills"
+        else                               # verbose mode
+          echo "$procs" | sed 's/^/    /g'
+          ps -ef | grep -E 'python3 framework|python3 skills' | grep -v "grep" | sed 's/^/    /g'
+        fi
+      else                                 # not minimy
         echo "    Found matching $theService processes:"
         echo "$procs" | sed 's/^/    /g'
       fi
