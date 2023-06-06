@@ -87,9 +87,10 @@ function listService()
     procs=`ps -ef | grep $theService | grep -v grep`
     if [ ${#procs} != 0 ]; then            # matching process
       if [ "$theService" = minimy ]; then  # just show the skills running
-        skills=`echo "$procs" | awk -F/ '{print $NF}'`
-        echo "    Found minimy user skills running:" 
-        echo "$procs" | awk -F/ '{print $NF}'| sed 's/^/      /g'  
+        userSkills=`echo "$procs" | awk -F/ '{print $NF}' | sort | xargs`
+        systemSkills=`ps -ef|grep -E 'python3 framework|python3 skills'|grep -v grep|awk -F/ '{print $NF}'|sed 's/.py//g'|sort|uniq|xargs`
+        echo "    Minimy user skills: $userSkills"
+        echo "         System skills: $systemSkills"
       else 
         echo "    Found matching $theService processes:"
         echo "$procs" | sed 's/^/    /g'
@@ -196,7 +197,6 @@ function doList()
     clear                                  # clear the screen
   fi
   listService minimy
-  listService buttons
   listService mpd 
   listService pulseaudio 
   
