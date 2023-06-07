@@ -17,8 +17,8 @@ Line commands to be used with Mycroft running on Linux
   * usr/local/sbin/gr               A grep wrapper that does not send output to stderr
   * usr/local/sbin/install1         Script to customize Ubuntu desktop for Minimy or OVOS
   * usr/local/sbin/installovos      Script to install ovos-core
-  * usr/local/sbin/lsenv            List the Mycroft environment - what services are running?
-  * usr/local/sbin/lsskills         List Mycroft skills installed or not installed
+  * usr/local/sbin/lsenv            List many aspects of the Minimy/Mycroft environment 
+  * usr/local/sbin/lsskills         List skills running 
   * usr/local/sbin/lstemp           Report the temperature of the Raspberry Pi
   * usr/local/sbin/setup.sh         Install executable files into /usr/local/sbin  
   * usr/local/sbin/start-minimy.sh  Start the Minimy stack 
@@ -26,8 +26,7 @@ Line commands to be used with Mycroft running on Linux
   * usr/local/sbin/stop-minimy.sh   Stop the Minimy stack 
   * usr/local/sbin/stop-mycroft.sh  Stop the Mycroft(OVOS) stack 
   * usr/local/sbin/testplay         Play back a recorded file to test your speakers
-  * usr/local/sbin/testrecord       Record for a short while and save to a file to test your microphone
-  * usr/local/sbin/tmpfsmnt         Scripts to mount tmpfs file systems
+  * usr/local/sbin/testrecord       Record a sample to a file and play back to test mic/speakers
 ```
 # Installation
 Clone the package then run ``setup.sh`` to copy the scripts to ``/usr/local/sbin``.
