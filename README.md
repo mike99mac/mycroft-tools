@@ -3,16 +3,20 @@ Line commands to be used with Mycroft running on Linux
 
 *NOTE:* These tools are in the process of being adapted from mycroft-core to ovos-core, as it seems Mycroft will be no more :((
 ```
-  * bash_profile                    Can be copied to ~ as .bash_profile to add shortcuts
+  * bash_profile                    Sample profile to be copied as $HOME/.bash_profile 
   * buttons.service                 Systemd file to start buttons as a daemon 
+  * home-pi-minimy-logs.mount       Systemd file to mount tmpfs over Minimy logs
   * mycroft.service                 Systemd file to start mycroft
+  * pulseaudio.service.new          Configure pulseaudio
+  * pulseaudio.service.old          Configure pulseaudio in a different directory
+  * pulseaudio.socket               Configure pulseaudio sockets
   * mpd.conf                        Sample mpd configuration file
-  * tmpfs.service                   Service to mount tmpfs file systems
+  * var-log.mount                   Systemd file to mount tmpfs over /var/log
   * usr/local/sbin/buttons          Script to call buttons.py  
   * usr/local/sbin/buttons.py       Poll GPIO pins for button presses of previous, stop and next
   * usr/local/sbin/gr               A grep wrapper that does not send output to stderr
-  * usr/local/sbin/install1         Script to customize a fresh flash of Ubuntu desktop
-  * usr/local/sbin/install2         Script to install ovos-core
+  * usr/local/sbin/install1         Script to customize Ubuntu desktop for Minimy or OVOS
+  * usr/local/sbin/installovos      Script to install ovos-core
   * usr/local/sbin/lsenv            List the Mycroft environment - what services are running?
   * usr/local/sbin/lsskills         List Mycroft skills installed or not installed
   * usr/local/sbin/lstemp           Report the temperature of the Raspberry Pi

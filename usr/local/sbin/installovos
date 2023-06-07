@@ -3,6 +3,27 @@
 # install2 - clone ovos-core, create a venv and configure it to run OVOS
 #
 #+--------------------------------------------------------------------------+
+function runCmd
+# run a command, report time spent and exit if it failes
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  cmd="$@"                                 # get all args
+  echo "Running: $cmd"                     # show the command
+  eval $cmd                                # run the command
+  rc=$?
+  if [ "$rc" != 0 ]; then                  # it failed
+    echo "ERROR: $cmd returned $rc"
+    exit 1
+  else
+    echo "command was successful!"
+  fi
+  echo ""
+ }                                         # runCmd()
+
+#+--------------------------------------------------------------------------+
 function installPackages
 # install skills and other packages with "pip install git+URL"
 # Args: the URLs to install
@@ -88,8 +109,6 @@ function installOVOS
  }                                         # installOVOS()
 
 # main()
-source installcommon                       # include common functions
-
 SECONDS=0                                  # reset stopwatch
 installOVOS                                # do the work
 

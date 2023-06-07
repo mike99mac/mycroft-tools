@@ -1,8 +1,29 @@
 #!/bin/bash
 #
 # install1 - first install script to configure a newly flashed Ubuntu Desktop 22.04
-#            this will prepare it to become an Minimy/Mycroft platform
+#            this will prepare it to become an Minimy/Mycroft or OVOS platform
 #
+#+--------------------------------------------------------------------------+
+function runCmd
+# run a command, report time spent and exit if it failes
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  cmd="$@"                                 # get all args
+  echo "Running: $cmd"                     # show the command
+  eval $cmd                                # run the command
+  rc=$?
+  if [ "$rc" != 0 ]; then                  # it failed
+    echo "ERROR: $cmd returned $rc"
+    exit 1
+  else
+    echo "command was successful!"
+  fi
+  echo ""
+ }                                         # runCmd()
+
 #+--------------------------------------------------------------------------+
 function installCoreqs
 # Do the work to install and configure everything to run Mycroft driven by ovos-core
@@ -102,8 +123,6 @@ function installCoreqs
  }                                         # installCoreqs()
 
 # main()
-source installcommon                       # include common functions
-
 date=`date`
 echo "Running install1 on $date ..."
 
