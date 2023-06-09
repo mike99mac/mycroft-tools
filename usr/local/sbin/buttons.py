@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-#
-#            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-#   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-#
-#  0. You just DO WHAT THE FUCK YOU WANT TO.
-#
 from mycroft_bus_client import MessageBusClient, Message
 import signal
 import subprocess

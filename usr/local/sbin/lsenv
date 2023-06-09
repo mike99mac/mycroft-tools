@@ -101,7 +101,7 @@ function listService()
         echo "$procs" | sed 's/^/    /g'
       fi
     else
-      echo "    WARNING: no processes matching $theService - it does not appear to be running ..."
+      echo "    WARNING: $theService does not appear to be running"
     fi  
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
@@ -237,5 +237,5 @@ verbose=1
 
 # main()
 parseArgs $@                               # parse arguments
-doList                                     # list the requested output 
+doList                                     # create output  
 
