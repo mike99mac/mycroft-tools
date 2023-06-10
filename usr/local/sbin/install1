@@ -26,15 +26,17 @@ function runCmd
 
 #+--------------------------------------------------------------------------+
 function installCoreqs
-# Do the work to install and configure everything to run Mycroft driven by ovos-core
+# Do the work to install and configure everything to run Minimy 
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
   echo "installing co-req packages ..."
-  runCmd sudo apt-get install -y mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3.10-venv python3-venv
-  
+    for nextPkg in mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3.10-venv python3-venv; do
+    runCmd sudo apt-get -q install -y $nextPkg
+  done
+
   echo "setting vim to better colors ..."
   grep "colorscheme desert" /etc/vim/vimrc >/dev/null 2>&1
   if [ $? != 0 ]; then                     # has not been added
@@ -64,7 +66,7 @@ function installCoreqs
   
   # vim - please just give me a newline
   echo "removing annoying autoindent from vim ..."
-  if [ -d $HOME/.vim ]; then
+  if [ ! -d $HOME/.vim ]; then
     runCmd mkdir $HOME/.vim 
   fi  
   cd $HOME/.vim
@@ -134,5 +136,5 @@ let sec=$SECONDS%60
 if [ $sec -lt 10 ]; then                   # add a leading 0
   sec="0$sec"
 fi
-echo "successfully installed co-reqs for Mycroft in $min:$sec"
+echo "successfully installed co-reqs for Minimy in $min:$sec"
 
