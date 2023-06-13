@@ -1,7 +1,10 @@
 #!/bin/bash
 #
-# install1 - first install script to configure a newly flashed Ubuntu Desktop 22.04
-#            this will prepare it to become an Minimy/Mycroft or OVOS platform
+# install1 - first install script to configure a newly flashed Linux
+#            to prepare it for a Minimy installaiton
+#            Supported Linuxes (from /etc/os-release)
+#              - "Ubuntu 22.04.2 LTS"
+#              - "Raspbian GNU/Linux 11 (bullseye)"
 #
 #+--------------------------------------------------------------------------+
 function runCmd
@@ -26,21 +29,50 @@ function runCmd
 
 #+--------------------------------------------------------------------------+
 function installCoreqs
-# Do the work to install and configure everything to run Minimy 
+# Do the work to install and configure everything to run Mycroft driven by ovos-core
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  echo "installing co-req packages ..."
-    for nextPkg in mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3.10-venv python3-venv; do
-    runCmd sudo apt-get -q install -y $nextPkg
-  done
+  distro=`grep ^PRETTY /etc/os-release | awk -F'"' '{print $2}'` # get the pretty name
+  if [ ${#distro} = 0 ]; then
+    echo "ERROR: did not find PRETTY_NAME in /etc/os-release"
+    exit 1
+  fi
+  echo "distro = $distro"
+  commonPackages="mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3-venv"
+  if [ "$distro" = "Ubuntu 22.04.2 LTS" ]; then # Ubuntu desktop
+    diffPackages="python3.10-venv" 
+    bootDir="/boot/firmware"
+  elif [ "$distro" = "Raspbian GNU/Linux 11 (bullseye)" ]; then # Raspberry Pi OS
+    diffPackages="python3.9-venv" 
+    bootDir="/boot"
+  else                                     # not supported
+    echo "ERROR: only Ubuntu Desktop 22.04 or Raspbian bullseye are supported"
+    exit 1 
+  fi
 
+  echo "installing co-req packages ..."
+  for nextPkg in $commonPackages $diffPachages; do  
+    runCmd sudo apt-get --quiet install -y $nextPkg
+  done
+  
+  if [ ! -f /etc/vim/vimrc.orig ]; then    # never copied original
+    runCmd sudo cp /etc/vim/vimrc /etc/vim/vimrc.orig
+  fi    
   echo "setting vim to better colors ..."
   grep "colorscheme desert" /etc/vim/vimrc >/dev/null 2>&1
-  if [ $? != 0 ]; then                     # has not been added
-    sudo sed -i -e 's/syntax on/syntax on\n  colorscheme desert/g' /etc/vim/vimrc
+  if [ $? != 0 ]; then                     # file has not been modified 
+    if [ "$distro" = "Ubuntu 22.04.2 LTS" ]; then 
+      sudo sed -i -e 's/syntax on/syntax on\n  colorscheme desert/g' /etc/vim/vimrc
+    else                                   # assume Raspbian
+      echo "syntax on" | sudo tee -a /etc/vim/vimrc
+      echo "colorscheme desert" | sudo tee -a /etc/vim/vimrc
+      echo "set term=builtin_ansi" | sudo tee -a /etc/vim/vimrc
+      echo "set mouse=r" | sudo tee -a /etc/vim/vimrc
+      echo "set nocp" | sudo tee -a /etc/vim/vimrc
+    fi  	
   fi  
   echo
   
@@ -55,7 +87,7 @@ function installCoreqs
   runCmd cp ~/mycroft-tools/bash_profile ~/.bash_profile
   
   # turn default and vc4 audio off, don't disable monitor overscan
-  cd /boot/firmware
+  cd $bootDir
   if [ ! -f config.txt.orig ]; then
     echo "customizing boot parameters ..."
     runCmd sudo cp config.txt config.txt.orig
@@ -136,5 +168,5 @@ let sec=$SECONDS%60
 if [ $sec -lt 10 ]; then                   # add a leading 0
   sec="0$sec"
 fi
-echo "successfully installed co-reqs for Minimy in $min:$sec"
+echo "successfully installed co-reqs for Mycroft in $min:$sec"
 
