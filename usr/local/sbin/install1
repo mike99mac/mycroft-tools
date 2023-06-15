@@ -45,7 +45,7 @@ function installCoreqs
   if [ "$distro" = "Ubuntu 22.04.2 LTS" ]; then # Ubuntu desktop
     diffPackages="python3.10-venv" 
     bootDir="/boot/firmware"
-  elif [ "$distro" = "Raspbian GNU/Linux 11 (bullseye)" ]; then # Raspberry Pi OS
+  elif [ "$distro" = "Raspbian GNU/Linux 11 (bullseye)" -o "$distro" = "Raspbian GNU/Linux 10 (buster)" ]; then # Raspbian
     diffPackages="python3.9-venv" 
     bootDir="/boot"
   else                                     # not supported
