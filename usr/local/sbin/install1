@@ -3,8 +3,8 @@
 # install1 - first install script to configure a newly flashed Linux
 #            to prepare it for a Minimy installaiton
 #            Supported Linuxes (from /etc/os-release)
-#              - "Ubuntu 22.04.2 LTS"
-#              - "Raspbian GNU/Linux 11 (bullseye)"
+#              - Ubuntu 22.04.2 LTS
+#              - 
 #
 #+--------------------------------------------------------------------------+
 function runCmd
@@ -45,7 +45,10 @@ function installCoreqs
   if [ "$distro" = "Ubuntu 22.04.2 LTS" ]; then # Ubuntu desktop
     diffPackages="python3.10-venv" 
     bootDir="/boot/firmware"
-  elif [ "$distro" = "Raspbian GNU/Linux 11 (bullseye)" -o "$distro" = "Raspbian GNU/Linux 10 (buster)" ]; then # Raspbian
+  elif [ "$distro" = "Raspbian GNU/Linux 10 (buster)" ]; then 
+    diffPackages="python3.9-venv" 
+    bootDir="/boot"
+  elif [ "$distro" = "Raspbian GNU/Linux 11 (bullseye)" ]; then
     diffPackages="python3.9-venv" 
     bootDir="/boot"
   else                                     # not supported
