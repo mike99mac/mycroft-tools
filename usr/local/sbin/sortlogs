@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+# sortlogs - merge and sort all log files 
+#
+tmpFile="all.logs"
+cd $HOME/minimy/logs
+if [ -f $tmpFile ]; then                   # old one exists
+  rm $tmpFile
+fi
+for i in *.log; do                         # copy all log files
+  cat $i >> $tmpFile
+done
+outFile="/tmp/logs-`date +\"%F-%T\"`"
+sort $tmpFile > $outFile                   # sort by timestamp
+echo "sorted logs saved to: $outFile"

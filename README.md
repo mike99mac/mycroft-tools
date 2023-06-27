@@ -4,7 +4,6 @@ Line commands to be used with Mycroft running on Linux
 *NOTE:* These tools are in the process of being adapted from mycroft-core to ovos-core, as it seems Mycroft will be no more :((
 ```
   * bash_profile                    Sample profile to be copied as $HOME/.bash_profile 
-  * buttons.service                 Systemd file to start buttons as a daemon 
   * home-pi-minimy-logs.mount       Systemd file to mount tmpfs over Minimy logs
   * mycroft.service                 Systemd file to start mycroft
   * pulseaudio.service.new          Configure pulseaudio
@@ -21,9 +20,10 @@ Line commands to be used with Mycroft running on Linux
   * usr/local/sbin/lsskills         List skills running 
   * usr/local/sbin/lstemp           Report the temperature of the Raspberry Pi
   * usr/local/sbin/setup.sh         Install executable files into /usr/local/sbin  
-  * usr/local/sbin/start-minimy.sh  Start the Minimy stack 
+  * usr/local/sbin/sortlogs         Merge and sort all log files and copy to /tmp
+  * usr/local/sbin/startminimy      Start the Minimy stack 
   * usr/local/sbin/start-mycroft.sh Start the Mycroft(OVOS) stack 
-  * usr/local/sbin/stop-minimy.sh   Stop the Minimy stack 
+  * usr/local/sbin/stopminimy       Stop the Minimy stack 
   * usr/local/sbin/stop-mycroft.sh  Stop the Mycroft(OVOS) stack 
   * usr/local/sbin/testplay         Play back a recorded file to test your speakers
   * usr/local/sbin/testrecord       Record a sample to a file and play back to test mic/speakers
