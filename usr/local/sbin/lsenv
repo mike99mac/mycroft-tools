@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# lsenv - list many aspects of the Mycroft environment
+# lsenv - list many aspects of the Mycroft/Minimy/Neon/OVOS environment
 #
 #+--------------------------------------------------------------------------+
 function usage()
@@ -10,7 +10,7 @@ function usage()
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  echo "Name: lsenv - List the Mycroft environment" 
+  echo "Name: lsenv - List the Mycroft/Minimy/Neon/OVOS environment" 
   echo "Usage: lsenv [OPTIONS] [noclear]" 
   echo "Where: noclear      Does not clear the screen first"
   echo ""
@@ -192,17 +192,25 @@ function tmpfsUsage()
 
 #+--------------------------------------------------------------------------+
 function doList()
-# List many aspects of the MiniMy environment 
+# List many aspects of the Mycroft/Minimy/Neon/OVOS environment 
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
+  local service=minimy
   if [ ${#options} = 0 ]; then 
     clear                                  # clear the screen
   fi
-  listService minimy
-  listService mpd 
+  if [ -d /etc/neon ]; then                # assume this is a Neon/OVOS system
+    service=neon
+  fi  
+  if [ "$service" = minimy ]; then 
+    listService minimy 
+    listService mpd 
+  else  
+    listService /home/neon/venv/bin/python # not sure this is what to check for
+  fi
   listService pulseaudio 
   
   # also list many other settings and status 
@@ -213,7 +221,6 @@ function doList()
   # root file system usage
   local rootUsed=`df -h / | tail -1 | awk '{print $5}'`
   printf "%15s : %s\n" "Root fs usage" "$rootUsed"
-
   getCPU                                   # CPU usage
 
   # memory usage
@@ -223,9 +230,12 @@ function doList()
   # are log directories using tmpfs? 
   echo "tmpfs filesystem?"
   tmpfsUsage /var/log Linux logs
-  tmpfsUsage $HOME/minimy/logs Minimy logs
-  tmpfsUsage $HOME/minimy/tmp Minimy temp dir 
-  # tmpfsUsage $HOME/.local/state/mycroft OVOS logs
+  if [ "$service" = minimy ]; then
+    tmpfsUsage $HOME/minimy/logs Minimy logs
+    tmpfsUsage $HOME/minimy/tmp Minimy temp dir 
+  else  
+    tmpfsUsage $HOME/.local/state/neon OVOS logs
+  fi  
   echo
  }                                         # doList()
 
