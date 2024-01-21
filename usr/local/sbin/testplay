@@ -37,13 +37,18 @@ function parseArgs()
         ;;
       -v|--verbose) 
         verbose=2
+        flags="-v"
         ;;
       -x|--debug)                          # turn trace on
          set -vx
          ;;
       *)
-	echo "ERROR: Too many arguments: $1"
-	usage 
+        if [ "$1" = cello ]; then          # try playing the cello sound
+          testFile="/usr/share/sounds/sound-icons/violoncello-7.wav"
+        else
+	  echo "ERROR: Too many arguments: $1"
+	  usage 
+        fi
         ;;
     esac
     shift
@@ -58,22 +63,27 @@ function doTest()
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
+  if [ ${#testFile} = 0 ]; then            # not testing the cello sound
+    testFile="/tmp/test-mic.wav"           # test recording file from testrecord
+  fi
+
   if [ ! -f $testFile ]; then 
     echo "ERROR: did note find test recording in file $testFile"
     echo "Did you run testrecord?"
     exit 1
   else   
     if [ $verbose -gt 1 ]; then
-      echo "calling command: aplay $testFile"
+      echo "calling command: aplay $flags $testFile"
     fi
-    aplay $testFile 
+    aplay $flags $testFile 
   fi	  
  }                                         # doTest()
 
 #+--------------------------------------------------------------------------+
 # Global variables"
-testFile="/tmp/test-mic.wav"               # test recording file from testrecord
+testFile=""                                # test file to play 
 verbose=1                                  # verbosity
+flags=""                                   # flags to pass on
 
 # main()
 parseArgs $@                               # parse arguments
