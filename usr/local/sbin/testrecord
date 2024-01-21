@@ -50,6 +50,7 @@ function parseArgs()
         ;;
       -v|--verbose) 
         verbose=2
+        flags="-v"
         ;;
       -x|--debug)                          # turn trace on
          set -vx
@@ -112,7 +113,7 @@ function recordCard()
   fi
   
   # put the arecord command together and run it
-  cmd="arecord $rateClause $channelsClause $formatClause -d $numSecs /tmp/test-mic.wav"
+  cmd="arecord $flags $rateClause $channelsClause $formatClause -d $numSecs /tmp/test-mic.wav"
   echo "Testing your microphone for $numSecs seconds ==========> SAY SOMETHING!"
   echo "INFO: running command: $cmd"
   $cmd                                     # run the command
@@ -208,6 +209,7 @@ actionType="record"                        # "record" or "list"
 cardToUse="default"                        # "default" or card number
 numSecs="5"                                # number of seconds to record
 verbose=1                                  # verbosity "1" or "2"
+flags=""                                   # flags to pass on
 
 # main()
 parseArgs $@                               # parse arguments
@@ -220,5 +222,5 @@ elif [ ! -x /usr/local/sbin/testplay ]; then
   exit 2
 fi
 echo "Calling testplay to play back the recording ..."
-/usr/local/sbin/testplay
+/usr/local/sbin/testplay $flags
 exit $?
