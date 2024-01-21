@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# grl - short command to search through Minimy log files 
+#
+cd $HOME/minimy/logs
+grep -n "$@" *.log 
