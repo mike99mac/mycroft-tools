@@ -41,7 +41,7 @@ function installCoreqs
     exit 1
   fi
   echo "distro = $distro"
-  commonPackages="mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3-venv"
+  commonPackages="curl mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3-venv"
   if [ "${distro:0:12}" = "Ubuntu 22.04" ]; then # Ubuntu desktop
     diffPackages="python3.10-venv" 
     bootDir="/boot/firmware"
@@ -83,6 +83,10 @@ function installCoreqs
   runCmd sudo usermod -a -G video,pulse,pulse-access,dialout,kmem pi
   echo "adding groups to user mpd ..."
   runCmd sudo usermod -a -G pulse-access,pi mpd
+  echo "adding groups spi, i2c and gpio to /etc/groump ..."
+  sudo groupadd -g 993 spi
+  sudo groupadd -g 994 i2c
+  sudo groupadd -g 993 gpio 
   echo
   
   # copy a .bash_profile from mycroft-tools
