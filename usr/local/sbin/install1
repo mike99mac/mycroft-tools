@@ -67,16 +67,7 @@ function installCoreqs
   echo "setting vim to better colors ..."
   grep "colorscheme desert" /etc/vim/vimrc >/dev/null 2>&1
   if [ $? != 0 ]; then                     # file has not been modified 
-    if [ "$distro" = "Ubuntu 22.04.2 LTS" ]; then 
-      sudo sed -i -e 's/syntax on/syntax on\n  colorscheme desert/g' /etc/vim/vimrc
-    else                                   # assume Raspbian
-      echo "syntax on" | sudo tee -a /etc/vim/vimrc
-      echo "colorscheme desert" | sudo tee -a /etc/vim/vimrc
-      echo "set term=builtin_ansi" | sudo tee -a /etc/vim/vimrc
-      echo "set mouse=r" | sudo tee -a /etc/vim/vimrc
-      echo "set nocp" | sudo tee -a /etc/vim/vimrc
-      echo "set compatible" | sudo tee -a /etc/vim/vimrc
-    fi  	
+    echo "colorscheme desert" | sudo tee -a /etc/vim/vimrc
   fi  
   echo
   
