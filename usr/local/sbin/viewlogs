@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+# viewlogs - list OVOS logs
+#
+#+--------------------------------------------------------------------------+
+function usage()
+# Give help to the user
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo "Name: viewlogs - List Minimy/OVOS logs" 
+  echo "Usage: viewlogs [OPTIONS]" 
+  echo ""
+  echo "OPTIONS:"
+  echo "  -h|--help         Give help (this screen)"
+  echo "  -v|--verbose      Increase verbosity" 
+  echo "  -x|--debug        Print commands and arguments as they are executed"
+  exit 51
+ }                                         # usage()
+
+#+--------------------------------------------------------------------------+
+function parseArgs()
+# Parse arguments
+# Args: All arguments passed into script
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  while [ -n "$1" ]                        # loop through args passed in
+  do
+    case "$1" in
+      -h|--help)
+        usage
+        ;;
+      -v|--verbose) 
+        verbose=2
+        ;;
+      -x|--debug)                          # turn trace on
+         set -vx
+         ;;
+      *)
+        echo "ERROR: Too many arguments: $1"
+        usage
+        ;;
+    esac
+    shift
+  done
+ }                                         # parseArgs()
+
+#+--------------------------------------------------------------------------+
+function doList()
+# List many aspects of the Mycroft/Minimy/Neon/OVOS environment 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  local logDir
+  if [ -d "$HOME/minimy/logs" ]; then      # assume Minimy
+    logDir="$HOME/minimy/logs"
+  elif [ -d "$HOME/.local/state/mycroft" ]; then # assume OVOS
+    logDir=$HOME/.local/state/mycroft
+  else
+    echo "ERROR: Log file directory not found in /home/pi/minimy/logs nor /home/ovos/.local/state/mycroft"
+    exit 1
+  fi
+  local tempFile=`mktemp`
+  for nextFile in $logDir/*.log; do
+    cat $nextFile >> $tempFile
+  done
+  if [ -s $tempFile ]; then                # file is not empty
+    sort -o $tempFile $tempFile
+    less $tempFile
+    rm $tempFile
+  else
+    echo "No log files found"
+    exit 2
+  fi
+ }                                         # doList()
+
+#+--------------------------------------------------------------------------+
+# Global variables"
+verbose=1                                 
+
+# main()
+parseArgs $@                               # parse arguments
+doList                                     # create output  
+

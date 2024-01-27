@@ -27,6 +27,7 @@ Line commands to be used with Mycroft running on Linux
   * usr/local/sbin/stop-mycroft.sh  Stop the Mycroft(OVOS) stack 
   * usr/local/sbin/testplay         Play back a recorded file to test your speakers
   * usr/local/sbin/testrecord       Record a sample to a file and play back to test mic/speakers
+  * usr/local/sbin/viewlogs         View merged log files                                       
 ```
 # Installation
 Clone the package then run ``setup.sh`` to copy the scripts to ``/usr/local/sbin``.
