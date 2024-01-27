@@ -75,6 +75,7 @@ function installCoreqs
       echo "set term=builtin_ansi" | sudo tee -a /etc/vim/vimrc
       echo "set mouse=r" | sudo tee -a /etc/vim/vimrc
       echo "set nocp" | sudo tee -a /etc/vim/vimrc
+      echo "set compatible" | sudo tee -a /etc/vim/vimrc
     fi  	
   fi  
   echo
