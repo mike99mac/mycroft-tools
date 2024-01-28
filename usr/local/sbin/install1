@@ -167,5 +167,5 @@ let sec=$SECONDS%60
 if [ $sec -lt 10 ]; then                   # add a leading 0
   sec="0$sec"
 fi
-echo "successfully installed co-reqs for Minimy in $min:$sec"
+echo "successfully installed co-reqs for Minimy/OVOS in $min:$sec"
 
