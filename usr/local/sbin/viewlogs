@@ -52,33 +52,37 @@ function parseArgs()
 
 #+--------------------------------------------------------------------------+
 function doList()
-# List many aspects of the Mycroft/Minimy/Neon/OVOS environment 
+# Find, merge and sort log files and view with `less` 
 #+--------------------------------------------------------------------------+
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
   local logDir
-  if [ -d "$HOME/minimy/logs" ]; then      # assume Minimy
-    logDir="$HOME/minimy/logs"
-  elif [ -d "$HOME/.local/state/mycroft" ]; then # assume OVOS
-    logDir=$HOME/.local/state/mycroft
-  else
-    echo "ERROR: Log file directory not found in /home/pi/minimy/logs nor /home/ovos/.local/state/mycroft"
+  local logDirs="$HOME/minimy/logs $HOME/.local/state/mycroft $HOME/.local/state/neon" 
+  local nextDir
+
+  for nextDir in $logDirs; do
+    if [ -d "$HOME/minimy/logs" ]; then    
+      logDir=$nextDir
+      break
+    fi
+  done
+  if [ ${#logDir} = 0 ]; then              # log directory not found
+    echo "ERROR: Log file directory not found in $logDirs" 
     exit 1
   fi
-  local tempFile=`mktemp`
-  for nextFile in $logDir/*.log; do
-    cat $nextFile >> $tempFile
-  done
-  if [ -s $tempFile ]; then                # file is not empty
-    sort -o $tempFile $tempFile
-    less $tempFile
-    rm $tempFile
-  else
-    echo "No log files found"
+  if [ ! -f $logDir/*.log ]; then          # no log files found
+    echo "No log files found in $logDir"
     exit 2
   fi
+  local tempFile=`mktemp`
+  for nextFile in $logDir/*.log; do        # merge log files
+    cat $nextFile >> $tempFile
+  done
+  sort -o $tempFile $tempFile              # sort log files by timestamp
+  less $tempFile
+  rm $tempFile
  }                                         # doList()
 
 #+--------------------------------------------------------------------------+
