@@ -198,18 +198,18 @@ function doList()
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
 
-  local service=minimy
+  local service
   if [ ${#options} = 0 ]; then 
     clear                                  # clear the screen
   fi
-  if [ -d /etc/neon ]; then                # assume this is a Neon/OVOS system
-    service=neon
-  fi  
-  if [ "$service" = minimy ]; then 
+  ps -ef | grep -v grep | grep ovos_PHAL >/dev/null
+  if [ $? = 0 ]; then                      # looks like OVOS is running 
+    service="ovos"
+    listService bin/ovos  
+  else                                     # assume Minimy 
+    service="minimy"
     listService minimy 
     listService mpd 
-  else  
-    listService /home/neon/venv/bin/python # not sure this is what to check for
   fi
   listService pulseaudio 
   
@@ -234,7 +234,7 @@ function doList()
     tmpfsUsage $HOME/minimy/logs Minimy logs
     tmpfsUsage $HOME/minimy/tmp Minimy temp dir 
   else  
-    tmpfsUsage $HOME/.local/state/neon OVOS logs
+    tmpfsUsage $HOME/.local/state/mycroft OVOS logs
   fi  
   echo
  }                                         # doList()
