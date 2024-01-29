@@ -1,6 +1,105 @@
 #!/bin/bash
 #
-# grl - short command to search through Minimy log files 
+# grl - search (grep) through OVOS, Neon or Minimy log files for a string
 #
-cd $HOME/minimy/logs
-grep -n "$@" *.log 
+#+--------------------------------------------------------------------------+
+function usage()
+# Give help to the user
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo "Name: grl - Search through Neon/OVOS/Minimy logs" 
+  echo "Usage: grl [OPTIONS] SEARCH-STRING" 
+  echo "Where: SEARCH-STRING is the string to search for in the log files"
+  echo ""
+  echo "OPTIONS:"
+  echo "  -h|--help         Give help (this screen)"
+  echo "  -v|--verbose      Increase verbosity" 
+  echo "  -x|--debug        Print commands and arguments as they are executed"
+  exit 51
+ }                                         # usage()
+
+#+--------------------------------------------------------------------------+
+function parseArgs()
+# Parse arguments
+# Args: All arguments passed into script
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  while [ -n "$1" ]                        # loop through args passed in
+  do
+    case "$1" in
+      -h|--help)
+        usage
+        ;;
+      -v|--verbose) 
+        verbose=2
+        ;;
+      -x|--debug)                          # turn trace on
+         set -vx
+         ;;
+      *)
+        theString="$@" 
+        break                              # out of while loop
+        ;;
+    esac
+    shift
+  done
+ }                                         # parseArgs()
+
+#+--------------------------------------------------------------------------+
+function doSearch()
+# Find, and search through log files 
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  local logDir
+  local logDirs="$HOME/minimy/logs $HOME/.local/state/mycroft $HOME/.local/state/neon" 
+  local nextDir
+  local nextFile
+
+  for nextDir in $logDirs; do
+    if [ -d $nextDir ]; then    
+      logDir=$nextDir
+      break
+    fi
+  done
+  if [ ${#logDir} = 0 ]; then              # log directory not found
+    echo "ERROR: Log file directory not found in $logDirs" 
+    exit 1
+  fi
+  stat $logDir/*.log >/dev/null 2>&1
+  if [ $? != 0 ]; then                     # no log files found
+    echo "No log files found in $logDir"
+    exit 2
+  fi
+  local tempFile=`mktemp`
+  for nextFile in $logDir/*.log; do        # merge log files
+    cat $nextFile >> $tempFile
+  done
+  sort -i $tempFile $tempFile >/dev/null   # sort log files by timestamp
+  if [ "$verbose" -gt 1 ]; then            # verbose mode
+    echo "logDir = $logDir"
+    echo "log files:"
+    ls -l $logDir/*.log
+  fi
+  echo "grep \"$theString\" $tempFile"     # show the command
+  grep "$theString" $tempFile 2>/dev/null  # search log files with no stderr
+  exit $?                                  # bubble up grep's return code 
+ }                                         # doSearch()
+
+#+--------------------------------------------------------------------------+
+# Global variables"
+theString=""
+verbose=1                                 
+
+# main()
+parseArgs $@                               # parse arguments
+doSearch                                   # search the files 
+
