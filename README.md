@@ -14,6 +14,7 @@ Line commands to be used with Mycroft running on Linux
   * usr/local/sbin/buttons          Script to call buttons.py  
   * usr/local/sbin/buttons.py       Poll GPIO pins for button presses of previous, stop and next
   * usr/local/sbin/gr               A grep wrapper that does not send output to stderr
+  * usr/local/sbin/gro              A grep wrapper to search OVOS code for a pattern
   * usr/local/sbin/install1         Script to customize Ubuntu desktop for Minimy or OVOS
   * usr/local/sbin/installovos      Script to install ovos-core
   * usr/local/sbin/lsenv            List many aspects of the Minimy/Mycroft environment 
