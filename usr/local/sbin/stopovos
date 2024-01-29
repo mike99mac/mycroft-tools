@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# stopovos - stop all OVOS processes
+#
+echo "Stopping OVOS ..."
+sudo systemctl stop ovos-phal-admin
+systemctl --user stop ovos-core.service
+systemctl --user stop ovos-listener.service
+systemctl --user stop ovos-messagebus.service
+systemctl --user stop ovos-phal.service
+
+OVOSprocs=`ps -ef | grep ovos | grep -v grep | grep -v stopovos` 
+if [ ${#OVOSprocs} = 0 ]; then
+  echo "No OVOS proccesses found"
+else
+  echo "Found OVSO processes:"
+  echo "$OVOSprocs"
+fi
+

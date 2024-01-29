@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# startovos - start all OVOS processes
+#
+echo "Starting OVOS ..."
+sudo systemctl start ovos-phal-admin
+systemctl --user start ovos-core.service
+systemctl --user start ovos-listener.service
+systemctl --user start ovos-messagebus.service
+systemctl --user start ovos-phal.service
+
+OVOSprocs=`ps -ef | grep ovos | grep -v grep | grep -v startovos` 
+if [ ${#OVOSprocs} = 0 ]; then
+  echo "No OVOS proccesses found"
+else
+  echo "Found OVSO processes:"
+  echo "$OVOSprocs"
+fi
+

@@ -24,8 +24,10 @@ Line commands to be used with Mycroft running on Linux
   * usr/local/sbin/sortlogs         Merge and sort all log files and copy to /tmp
   * usr/local/sbin/startminimy      Start the Minimy stack 
   * usr/local/sbin/start-mycroft.sh Start the Mycroft(OVOS) stack 
+  * usr/local/sbin/startovos        Start the OVOS stack 
   * usr/local/sbin/stopminimy       Stop the Minimy stack 
   * usr/local/sbin/stop-mycroft.sh  Stop the Mycroft(OVOS) stack 
+  * usr/local/sbin/stopovos         Stop the OVOS stack 
   * usr/local/sbin/testplay         Play back a recorded file to test your speakers
   * usr/local/sbin/testrecord       Record a sample to a file and play back to test mic/speakers
   * usr/local/sbin/viewlogs         View merged log files                                       
