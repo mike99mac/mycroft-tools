@@ -8,5 +8,5 @@ if [ $# = 0 ]; then                        # no args passed
   exit 1
 fi
 cd ~/.venvs/ovos/lib/python3.10/site-packages/
-grep "$@" ovos_*/*.py ovos_*/*/*.py ovos_*/*/*/*.py # search all python files for the pattern
+grep "$@" ovos_*/*.py ovos_*/*/*.py ovos_*/*/*/*.py skill_ovos_*/*.py skill_ovos_*/*/*.py 
 
