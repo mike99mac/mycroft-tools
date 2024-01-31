@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# restartminimy - stop and start minimy 
+#
+# main() 
+echo
+stopminimy
+echo
+startminimy

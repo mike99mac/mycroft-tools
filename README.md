@@ -20,6 +20,7 @@ Line commands to be used with Mycroft running on Linux
   * usr/local/sbin/lsenv            List many aspects of the Minimy/Mycroft environment 
   * usr/local/sbin/lsskills         List skills running 
   * usr/local/sbin/lstemp           Report the temperature of the Raspberry Pi
+  * usr/local/sbin/restartminimy    Stop then start the Minimy stack   
   * usr/local/sbin/setup.sh         Install executable files into /usr/local/sbin  
   * usr/local/sbin/sortlogs         Merge and sort all log files and copy to /tmp
   * usr/local/sbin/startminimy      Start the Minimy stack 

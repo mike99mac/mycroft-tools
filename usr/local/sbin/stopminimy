@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# stopminimy - kill processes with 'minimy' in them 
+#
+# main() 
+echo "Stopping Minimy ..." 
+procs=`ps -ef | egrep 'minimy/skills|skills/system_skills|framework/services|MsgBus|mimic3|skill_system.py' | grep -v grep`
+if [ ${#procs} = 0 ]; then 
+  echo "Minimy does not appear to be running"
+else
+  echo "$procs" | while read nextProc; do
+    pid=`echo $nextProc | awk '{print $2}'`
+    echo "killing process: $nextProc ..."
+    sudo kill $pid
+  done 
+  sortlogs                                 # create a time sorted file of all logs
+  rm -fr /tmp/pymp*                        # clean up socket temp directories
+fi
