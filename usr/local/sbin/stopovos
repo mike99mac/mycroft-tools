@@ -11,8 +11,8 @@ systemctl --user stop ovos-phal.service
 
 OVOSprocs=`ps -ef | grep ovos | grep -v grep | grep -v stopovos` 
 if [ ${#OVOSprocs} = 0 ]; then
-  echo "No OVOS proccesses found"
-else
+  echo "OVOS has stopped"
+else                                       # not expected
   echo "Found OVSO processes:"
   echo "$OVOSprocs"
 fi
