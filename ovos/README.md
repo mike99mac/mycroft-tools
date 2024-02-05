@@ -20,4 +20,20 @@ sh -c "curl -s https://raw.githubusercontent.com/OpenVoiceOS/ovos-installer/main
  - Skills    true            
  - Tuning:   no         
 ```
+Press Enter and the install should take a few minutes.  When it is done, OVOS should be running.
 
+You can run ``ps -ef | grep -v grep | grep ovos`` to see some OVOS processes:
+
+## Installing OVOS media service
+To install the new OVOS media service, perform the following tasks:
+
+- Go into a virtual environment:
+```
+$ source /home/pi/.venvs/ovos/bin/activate
+```
+- Set the preference ``enable_old_audioservice`` to False:
+(ovos) $ ovos-config set -k enable_old_audioservice
+Please enter the value to be stored (type: bool) : False
+```
+
+- Next
