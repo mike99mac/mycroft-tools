@@ -22,7 +22,15 @@ sh -c "curl -s https://raw.githubusercontent.com/OpenVoiceOS/ovos-installer/main
 ```
 Press Enter and the install should take a few minutes.  When it is done, OVOS should be running.
 
-You can run ``ps -ef | grep -v grep | grep ovos`` to see some OVOS processes:
+Run the following command to see OVOS processes:
+```
+$ ps -ef | grep -v grep | grep ovos
+root     2418483       1  0 12:52 ?        00:00:08 /home/pi/.venvs/ovos/bin/python3 /home/pi/.venvs/ovos/bin/ovos_PHAL_admin
+pi       2418485     838  0 12:52 ?        00:00:08 /home/pi/.venvs/ovos/bin/python3 /home/pi/.venvs/ovos/bin/ovos-messagebus
+pi       2418486     838  0 12:52 ?        00:00:09 /home/pi/.venvs/ovos/bin/python3 /home/pi/.venvs/ovos/bin/ovos_PHAL
+pi       2418487     838  3 12:52 ?        00:01:00 /home/pi/.venvs/ovos/bin/python3 /home/pi/.venvs/ovos/bin/ovos-core
+pi       2418489     838  9 12:52 ?        00:02:33 /home/pi/.venvs/ovos/bin/python3 /home/pi/.venvs/ovos/bin/ovos-dinkum-listener
+```
 
 ## Installing OVOS media service
 To install the new OVOS media service, perform the following tasks:
@@ -35,5 +43,44 @@ $ source /home/pi/.venvs/ovos/bin/activate
 (ovos) $ ovos-config set -k enable_old_audioservice
 Please enter the value to be stored (type: bool) : False
 ```
+- Change to the directory where user system user service files exist:
+```
+(ovos) $ cd /home/pi/.config/systemd/user
+```
+- Create a systemd file to start the OVOS media service: 
+```
+(ovos) $ cd ~/.config/systemd/user/default.target.wants
+(ovos) $ sudo vi ovos-media.service
+...
+(ovos) $ cat ovos-media.service
+[Unit]
+Documentation=https://openvoiceos.github.io/ovos-docker/about/glossary/components/#ovos-media
+Description=Open Voice OS - Media
+After=network.target ovos-messagebus.service ovos-phal.service
+Requires=ovos-messagebus.service ovos-phal.service
 
-- Next
+[Service]
+WorkingDirectory=/home/pi/.venvs/ovos
+ExecStart=/home/pi/.venvs/ovos/bin/ovos-media
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s KILL $MAINPID
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
+```
+- Enable it to run at boot time:
+```
+
+$ systemctl --user enable ovos-media
+Created symlink /home/pi/.config/systemd/user/default.target.wants/ovos-media.service → /home/pi/.config/systemd/user/ovos-media.service.
+```
+- Reboot 
+```
+(ovos) sudo reboot
+```
+- When the system comes back get, get a new SSH session and check the OVOS processes:
+```
+TODO
+```
