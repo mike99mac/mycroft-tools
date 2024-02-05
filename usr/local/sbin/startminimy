@@ -59,8 +59,8 @@ function mountUmountDirs
   : STACK:  ${FUNCNAME[@]}
 
   # unmount and remount a tmpfs over /var/log and $HOME/minimy/logs
-  umountTmpfs /var/log 
-  mountTmpfs var-log.mount Linux log directory
+  # umountTmpfs /var/log 
+  # mountTmpfs var-log.mount Linux log directory
   umountTmpfs $HOME/minimy/logs
   mountTmpfs home-$USER-minimy-logs.mount Minimy log directory
 
@@ -79,13 +79,6 @@ function startSystem
  {
   : SOURCE: ${BASH_SOURCE}
   : STACK:  ${FUNCNAME[@]}
-
-  if [ ! -d $baseDir ]; then
-    echo "ERROR: base directory $baseDir not found"
-    echo "To clone Minimy to your home directory: "
-    echo "cd; git clone https://github.com/mike99mac/minimy-mike99mac" 
-    exit 1
-  fi  
 
   # check if minimy is already running
   ps -ef | grep "python3.*minimy" | grep -v grep
@@ -203,12 +196,6 @@ function loadUserSkills
   echo "Starting User Skills ..."
   cd $baseDir/skills/user_skills
   loadOneSkill help Help skill
-  # rfm, youtube and npr_news skills have been incorporated into the mpc skill
-  # loadOneSkill ../rfm RFM skill
-  # loadOneSkill ../youtube YouTube skill 
-  # loadOneSkill ../npr_news NPR News skill 
-  # do not load the Home Assistant skill for now
-  # loadOneSkill ../ha_skill Home Assistant skill
   loadOneSkill ../email Email skill
   loadOneSkill ../wiki Wiki skill
   loadOneSkill ../timedate TimeDate skill 
@@ -222,7 +209,9 @@ function loadUserSkills
 # main()
 baseDir="$HOME/minimy"
 if [ ! -d $baseDir ]; then                 # base dir not found
-  echo "ERROR: directory $baseDir not found"
+  echo "ERROR: base directory $baseDir not found"
+  echo "To clone Minimy to your home directory: "
+  echo "cd; git clone https://github.com/mike99mac/minimy-mike99mac" 
   exit 1
 fi
 export PYTHONPATH="$baseDir:$baseDir/venv_ngv/lib/python3.10/site-packages"

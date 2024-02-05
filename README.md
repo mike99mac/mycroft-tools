@@ -13,6 +13,7 @@ Line commands to be used with Mycroft running on Linux
   * var-log.mount                   Systemd file to mount tmpfs over /var/log
   * usr/local/sbin/buttons          Script to call buttons.py  
   * usr/local/sbin/buttons.py       Poll GPIO pins for button presses of previous, stop and next
+  * usr/local/sbin/cmpcode          Compare running and github Minimy Python files 
   * usr/local/sbin/gr               A grep wrapper that does not send output to stderr
   * usr/local/sbin/gro              A grep wrapper to search OVOS code for a pattern
   * usr/local/sbin/install1         Script to customize Ubuntu desktop for Minimy or OVOS
