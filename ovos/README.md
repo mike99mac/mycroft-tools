@@ -1,7 +1,8 @@
 # Installing OVOS
 This document describes how to install and run OVOS - the Open Voice Operating System
 
-It assumes you have prepared a Linux operating system installed with the proper prerequisites.  If you haven't, there is well documented description here: https://github.com/mike99mac/minimy-mike99mac
+It assumes you have prepared a Linux operating system installed with the proper prerequisites, especially running the script ``install1``.  
+If you haven't, there is well documented description here: https://github.com/mike99mac/minimy-mike99mac
 
 To install and configure OVOS, perform the following steps:
 - Install OVOS in a virtual environment:
@@ -10,7 +11,7 @@ To install and configure OVOS, perform the following steps:
 $ sh -c "curl -s https://raw.githubusercontent.com/OpenVoiceOS/ovos-installer/main/installer.sh -o installer.sh && chmod +x installer.sh && sudo ./installer.sh"
 ``
 
-- Choose these options:
+- Choose these options when you are prompted:
 ```
  - Method:   virtualenv                      
  - Version:  development        
@@ -42,10 +43,22 @@ To install the new OVOS media service, perform the following tasks:
 $ source /home/pi/.venvs/ovos/bin/activate
 ```
 
-- Install the ovos-media plugin:
+- Install the ovos-media plugin. The ``--ignore-installed`` is needed to avoid the error To update pip, run ``pip install --upgrade pip``.
 
 ```
 (ovos) $ pip install --ignore-installed  ovos-media
+```
+
+- Install the ovos-media plugin. The ``--ignore-installed`` is needed to avoid the error To update pip, run ``pip install --upgrade pip``.
+
+```
+(ovos) $ pip install --ignore-installed  ovos-media-plugin-vlc
+```
+
+- Ensure the OVOS bin directory is in your path:
+```
+(ovos) $ which ovos-config
+/home/pi/.venvs/ovos/bin/ovos-config
 ```
 
 - Set the preference ``enable_old_audioservice`` to False:
