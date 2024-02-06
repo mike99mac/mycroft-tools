@@ -2,18 +2,92 @@
 #
 # startovos - start all OVOS processes
 #
-echo "Starting OVOS ..."
-sudo systemctl start ovos-phal-admin
-systemctl --user start ovos-core.service
-systemctl --user start ovos-listener.service
-systemctl --user start ovos-messagebus.service
-systemctl --user start ovos-phal.service
+#+--------------------------------------------------------------------------+
+function umountTmpfs
+# Unmount a temporary file system if it is mounted
+# Arg 1: file system to umount
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
 
-OVOSprocs=`ps -ef | grep ovos | grep -v grep | grep -v startovos` 
-if [ ${#OVOSprocs} = 0 ]; then
-  echo "No OVOS proccesses found"
-else
-  echo "Found OVSO processes:"
-  echo "$OVOSprocs"
+  fileSystem=$1
+  echo "Unmounting tmpfs file system $fileSystem..."
+  fsType=`mount | grep $fileSystem | awk '{print $1}'` # check if it's mounted
+  if [ "$fsType" = "tmpfs" ]; then
+    sudo umount $fileSystem
+  fi
+ }                                         # umountTmpfs()
+
+#+--------------------------------------------------------------------------+
+function mountTmpfs
+# Mount a file system in a tmpfs using systemd .mount files
+# Arg 1    : systemd .mount file to use
+# Args 2-n : description of the file system
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  local mountFile=$1
+  shift
+  local desc="$@"                          # remaining args are desription
+
+  local mountDir=`echo $mountFile | sed 's:-:/:g'`
+  local fsType=`mount | grep $mountDir | awk '{print $5}'`
+  if [ "$fsType" = tmpfs ]; then           # already a tmpfs
+    echo "$mountDir is already a tmpfs"
+    return
+  fi
+  echo "making directory $fileSystem a tmpfs ..."
+  cmd="systemctl --user start $mountFile"
+  eval $cmd
+  rc=$?
+  if [ "$rc" != 0 ]; then
+    echo "WARNING $cmd returned $rc - proceeding without tmpfs $desc"
+  else
+    echo "$cmd was successful"
+  fi
+ }                                         # mountTmpfs()
+
+#+--------------------------------------------------------------------------+
+function startSystem
+# Start Minimy base components
+#+--------------------------------------------------------------------------+
+ {
+  : SOURCE: ${BASH_SOURCE}
+  : STACK:  ${FUNCNAME[@]}
+
+  echo "Starting OVOS ..."
+  umountTmpfs $HOME/.local/state/mycroft
+  mountTmpfs home-$USER-.local-state.mount OVOS log files temp directory
+
+  # launch all services 
+  sudo systemctl start ovos-phal-admin
+  systemctl --user start ovos-core.service
+  systemctl --user start ovos-listener.service
+  systemctl --user start ovos-messagebus.service
+  systemctl --user start ovos-phal.service
+  systemctl --user start ovos-media.service
+
+  OVOSprocs=`ps -ef | grep ovos | grep -v grep | grep -v startovos` 
+  if [ ${#OVOSprocs} = 0 ]; then
+    echo "OVOS appears to be down"
+  else
+    echo "Found OVSO processes:"
+    echo "$OVOSprocs"
+  fi
+ }                                         # startSystem()
+
+# main()
+logDir="$HOME/.local/state/mycroft"
+if [ ! -d $baseDir ]; then                 # dir not found
+  echo "ERROR: log directory $logDir not found"
+  exit 1
 fi
+
+echo "Starting OVOS..."
+startSystem
+cd $baseDir
+source $HOME/.venvs/ovos/bin/activate 
 
