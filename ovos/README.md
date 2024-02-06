@@ -7,7 +7,7 @@ To install and configure OVOS, perform the following steps:
 - Install OVOS in a virtual environment:
 
 `` 
-sh -c "curl -s https://raw.githubusercontent.com/OpenVoiceOS/ovos-installer/main/installer.sh -o installer.sh && chmod +x installer.sh && sudo ./installer.sh"
+$ sh -c "curl -s https://raw.githubusercontent.com/OpenVoiceOS/ovos-installer/main/installer.sh -o installer.sh && chmod +x installer.sh && sudo ./installer.sh"
 ``
 
 - Choose these options:
@@ -20,7 +20,7 @@ sh -c "curl -s https://raw.githubusercontent.com/OpenVoiceOS/ovos-installer/main
  - Tuning:   no         
 ```
 
-Press Enter and the install should take a few minutes.  When it is done, OVOS should be running.
+Press **Enter** and the install should take a few minutes.  When it is done, OVOS should be running.
 
 Run the following command to see OVOS processes:
 
@@ -42,6 +42,12 @@ To install the new OVOS media service, perform the following tasks:
 $ source /home/pi/.venvs/ovos/bin/activate
 ```
 
+- Install the ovos-media plugin:
+
+```
+(ovos) $ pip install --ignore-installed  ovos-media
+```
+
 - Set the preference ``enable_old_audioservice`` to False:
 
 ```
@@ -58,10 +64,7 @@ Please enter the value to be stored (type: bool) : False
 - Create a systemd file to start the OVOS media service: 
 
 ```
-(ovos) $ cd ~/.config/systemd/user/default.target.wants
 (ovos) $ sudo vi ovos-media.service
-...
-(ovos) $ cat ovos-media.service
 [Unit]
 Documentation=https://openvoiceos.github.io/ovos-docker/about/glossary/components/#ovos-media
 Description=Open Voice OS - Media
@@ -87,13 +90,13 @@ WantedBy=default.target
 Created symlink /home/pi/.config/systemd/user/default.target.wants/ovos-media.service → /home/pi/.config/systemd/user/ovos-media.service.
 ```
 
-- Reboot 
+- Reboot your Linux system: 
 
 ```
 (ovos) sudo reboot
 ```
 
-- When the system comes back get, get a new SSH session and check the OVOS processes:
+- When it comes back up, get a new SSH session and check the OVOS processes:
 
 ```
 $ ps -ef | grep -v grep | grep ovos

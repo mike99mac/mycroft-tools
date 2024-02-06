@@ -209,11 +209,15 @@ function doList()
   else                                     # assume Minimy 
     service="minimy"
     listService minimy 
-    listService mpd 
+    listService mpd                        # Minimy needs mpd running
   fi
-  listService pulseaudio 
+  listService pulseaudio                   # alwasy check for pulse
   
+  distro=`grep ^PRETTY /etc/os-release | awk -F'"' '{print $2}'` # get the pretty name
+
   # also list many other settings and status 
+  local distro=`grep ^PRETTY /etc/os-release | awk -F'"' '{print $2}'` # get the pretty name
+  printf "%15s : %s\n" "Distro" "$distro"
   local IPaddr=`hostname -I | awk '{print $1}'` # get the IP address
   printf "%15s : %s\n" "IP address" "$IPaddr"
   listTemp                                 # RasPi temperature
