@@ -11,7 +11,7 @@ function usage()
   : STACK:  ${FUNCNAME[@]}
 
   echo "Name: viewlogs - List Minimy/OVOS logs" 
-  echo "Usage: viewlogs [OPTIONS]" 
+  echo "Usage: viewlogs [OPTIONS] [mycroft|ovos]" 
   echo ""
   echo "OPTIONS:"
   echo "  -h|--help         Give help (this screen)"
@@ -42,8 +42,11 @@ function parseArgs()
          set -vx
          ;;
       *)
-        echo "ERROR: Too many arguments: $1"
-        usage
+        if [ "$1" != mycroft -a "$1" != ovos ]; then
+          echo "ERROR: unrecognized argument: $1"
+          usage
+        fi
+        theApp=$1
         ;;
     esac
     shift
@@ -63,12 +66,18 @@ function doList()
   local nextDir
   local nextFile
 
-  for nextDir in $logDirs; do
-    if [ -d $nextDir ]; then    
-      logDir=$nextDir
-      break
-    fi
-  done
+  if [ "$theApp" = mycroft ]; then
+    logDir="$HOME/minimy/logs"
+  elif [ "$theApp" = ovos ]; then
+    logDir="$HOME/.local/state/mycroft"
+  else
+    for nextDir in $logDirs; do
+      if [ -d $nextDir ]; then    
+        logDir=$nextDir
+        break
+      fi
+    done
+  fi
   if [ ${#logDir} = 0 ]; then              # log directory not found
     echo "ERROR: Log file directory not found in $logDirs" 
     exit 1
@@ -89,6 +98,7 @@ function doList()
 
 #+--------------------------------------------------------------------------+
 # Global variables"
+theApp=""                                  # mycroft or ovos
 verbose=1                                 
 
 # main()
