@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# install2 - clone ovos-core, create a venv and configure it to run OVOS
+# installovos - clone ovos-core, create a venv and configure it to run OVOS
 #
 #+--------------------------------------------------------------------------+
 function runCmd
@@ -52,7 +52,7 @@ function installOVOS
   : STACK:  ${FUNCNAME[@]}
 
   local date=`date`
-  echo "Running install2.installOVOS() on $date ..." 
+  echo "Running installovos on $date ..." 
   echo 
   if [ -d ~/ovos-core ]; then              # ovos-core directory exists
     echo -n "~/ovos-core directory exists - do you want to remove it and re-clone? (y/n) "
@@ -90,10 +90,12 @@ function installOVOS
   installPackages OpenVoiceOS/ovos-config OpenVoiceOS/ovos_skill_manager OpenVoiceOS/skill-ovos-date-time OpenVoiceOS/skill-ovos-fallback-unknown 
   installPackages OpenVoiceOS/skill-ovos-hello-world OpenVoiceOS/skill-ovos-naptime OpenVoiceOS/skill-ovos-news OpenVoiceOS/skill-ovos-personal 
   installPackages OpenVoiceOS/skill-ovos-stop OpenVoiceOS/skill-ovos-timer OpenVoiceOS/skill-ovos-volume OpenVoiceOS/skill-ovos-weather 
-  installPackages OpenVoiceOS/skill-ovos-wikipedia OpenVoiceOS/skill-ovos-youtube-music MycroftAI/adapt
+  # installPackages OpenVoiceOS/skill-ovos-wikipedia OpenVoiceOS/skill-ovos-youtube-music MycroftAI/adapt
+  installPackages OpenVoiceOS/skill-ovos-wikipedia OpenVoiceOS/skill-ovos-youtube-music OpenVoiceOS/ovos-media OpenVoiceOS/ovos-media-plugin-vlc
 
   echo "installing stable version of ovos-core ..."
-  runCmd "pip install ovos-core[all]"
+  # runCmd "pip install ovos-core[all]"
+  runCmd "pip install ovos-core[mycroft]"
 
 
   if [ ! -f /etc/systemd/system/mycroft.service ]; then
