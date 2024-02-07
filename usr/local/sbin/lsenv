@@ -101,7 +101,11 @@ function listService()
         echo "$procs" | sed 's/^/    /g'
       fi
     else
-      echo "    WARNING: $theService does not appear to be running"
+      if [ "$theService" = minimy ]; then
+        echo "    WARNING: Niether Minimy nor OVOS appear to be running"
+      else
+        echo "    WARNING: $theService does not appear to be running"
+      fi
     fi  
   fi	  
   /usr/bin/rm $tempFile                    # remove output file 
