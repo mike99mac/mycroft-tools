@@ -1,12 +1,25 @@
 #!/bin/bash
 #
-# gro - GRep Ovos code for a pattern
+# gro - GRep Ovos code for the supplied pattern
 #
 if [ $# = 0 ]; then                        # no args passed
   echo "ERROR: no search pattern passed in"
   echo "Usage: gro SEARCH_PATTERN"
   exit 1
 fi
-cd ~/.venvs/ovos/lib/python3.10/site-packages/
-grep -n "$@" ovos_*/*.py ovos_*/*/*.py ovos_*/*/*/*.py skill_ovos_*/*.py skill_ovos_*/*/*.py | sed "s:^:$HOME/.venvs/ovos/lib/python3.10/site-packages/:g"
+
+if [ -d $HOME/.venvs/ovos/lib/python3.10 ]; then
+  baseDir="$HOME/.venvs/ovos/lib/python3.10/site-packages"
+elif [ -d $HOME/.venvs/ovos/lib/python3.11 ]; then
+  baseDir="$HOME/.venvs/ovos/lib/python3.11/site-packages"
+else
+  echo "ERROR: Neither $HOME/.venvs/ovos/lib/python3.10 nor python3.11 found - is OVOS installed?"
+  exit 1
+fi
+
+echo
+echo "Searching Python files below $baseDir ..."
+echo
+cd $baseDir
+grep -n "$@" ovos_*/*.py ovos_*/*/*.py ovos_*/*/*/*.py skill_ovos_*/*.py skill_ovos_*/*/*.py | sed "s:^:$baseDir/:g"
 
