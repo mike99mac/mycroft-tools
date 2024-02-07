@@ -41,8 +41,8 @@ function installCoreqs
     exit 1
   fi
   echo "distro = $distro"
-  commonPackages="curl mlocate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3-venv"
-  if [ "${distro:0:12}" = "Ubuntu 22.04" ]; then # Ubuntu desktop
+  commonPackages="curl locate mpc mpd net-tools pandoc python3 python3-pip python3-rpi.gpio python3-venv"
+  if [ "${distro:0:12}" = "Ubuntu 22.04" -o "${distro:0:12}" = "Ubuntu 23.10" ]; then # Ubuntu desktop
     diffPackages="python3.10-venv" 
     bootDir="/boot/firmware"
   elif [ "$distro" = "Raspbian GNU/Linux 10 (buster)" ]; then 
